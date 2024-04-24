@@ -2,11 +2,12 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\ForoApiController;
+use App\Http\Controllers\Incapacidades\IncapacidadesController;
 use App\Http\Controllers\API\UserApiController;
 use App\Http\Controllers\API\RolApiController;
 use App\Http\Controllers\Auth\AuthenticationController;
-use App\Http\Controllers\Feed\FeedController;
+
+
 
 
 
@@ -21,21 +22,13 @@ Route::apiResource('rol', RolApiController::class);
 
 Route::get('/users', [UserApiController::class, 'index'])->middleware('auth:api');
 
-
-
-/*Route::delete('//{id}', [::class, 'destroy'])->middleware('auth:api');
-
-
-
-
-*/
-
-
+/*Route::delete('//{id}', [::class, 'destroy'])->middleware('auth:api');*/
 /*Route::get('/incapacidades', [IncapacidadesController::class, 'index'])->middleware('auth:api');*/
-
-Route::get('/incapacidades', [IncapacidadesController::class, 'index'])->middleware('auth:api');
+/*Route::get('/incapacidades', [IncapacidadesController::class, 'index'])->middleware('auth:api');*/
 /*Route::get('incapacidades//all', [IncapacidadesController::class, 'indexall'])->middleware('auth:api');*/
-Route::post('incapacidades//store', [IncapacidadesController::class, 'store'])->middleware('auth:api');
+/*Route::post('incapacidades/store', [IncapacidadesController::class, 'store'])->middleware('auth:api');*/
+
+Route::apiResource('incapacidades', IncapacidadesController::class)->middleware('auth:api');
 
 Route::get('/test', function () {
     return response([
@@ -47,9 +40,6 @@ Route::put('/updateUser', [UserApiController::class, 'update'])->middleware('aut
 
 Route::post('register', [AuthenticationController::class, 'register']);
 Route::post('login', [AuthenticationController::class, 'login']);
-
-
-
 
 Route::get('/get/user', [UserApiController::class, 'indexUser'])->middleware('auth:api');
 Route::put('/updateUser', [UserApiController::class, 'update'])->middleware('auth:api');
