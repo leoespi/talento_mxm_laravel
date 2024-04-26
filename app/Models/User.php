@@ -27,21 +27,18 @@ class User extends Authenticatable
         'rol_id',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
+    
+
+    public function perfil()
+    {
+        return $this->hasOne(Perfil::class);
+    }
+
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];

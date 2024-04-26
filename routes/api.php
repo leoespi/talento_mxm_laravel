@@ -6,6 +6,8 @@ use App\Http\Controllers\Incapacidades\IncapacidadesController;
 use App\Http\Controllers\API\UserApiController;
 use App\Http\Controllers\API\RolApiController;
 use App\Http\Controllers\Auth\AuthenticationController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PerfilController;
 
 
 
@@ -40,10 +42,18 @@ Route::get('/test', function () {
 Route::put('/updateUser', [UserApiController::class, 'update'])->middleware('auth:api');
 
 Route::post('register', [AuthenticationController::class, 'register']);
+
 Route::post('login', [AuthenticationController::class, 'login']);
 
 Route::get('/get/user', [UserApiController::class, 'indexUser'])->middleware('auth:api');
 Route::put('/updateUser', [UserApiController::class, 'update'])->middleware('auth:api');
+
+Route::get("/perfil/ver", [PerfilController::class,'verPerfil']);
+
+Route::get('logout', [AuthController::class, "logout"])->middleware('auth:api');
+   
+
+
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
