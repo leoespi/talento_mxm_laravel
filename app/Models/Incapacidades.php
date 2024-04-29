@@ -27,7 +27,7 @@ class Incapacidades extends Model
         
     ];
 
-
+  
     
     public function user(): BelongsTo
     {
