@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ExcelController;
+use App\Http\Controllers\ExcelIncapacidadesController;
 
 
 
@@ -19,6 +20,9 @@ Route::get('/Excel', function () {
     return view('Excel');
 });
 
+
+
+Route::get('/export-incapacidades', [ExcelIncapacidadesController::class, 'exportIncapacidades'])->name('export-incapacidades');
 
 Route::get('/export-users', [ExcelController::class, 'exportUsers'])->name('export-users');
 
