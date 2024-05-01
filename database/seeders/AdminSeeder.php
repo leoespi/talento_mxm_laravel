@@ -4,6 +4,7 @@ namespace Database\Seeders;
 use App\Models\User;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 
 class AdminSeeder extends Seeder{
@@ -19,17 +20,16 @@ class AdminSeeder extends Seeder{
             'name' => "leonardo",
             'cedula' => "1097092599",  // Agrega cedula 
             'email' => "eleo@gmail.com",
-            'password' => bcrypt('123456'),
+            'password' => Hash::make('123456'),
             'rol_id' => 1,
 
         ]);
 
         $user = User::create([
             'name' => "david",
-            'cedula' => "27951193", // Agrega el nombre de usuario aquí
+            'cedula' => "27951193", 
             'email' => "david@gmail.com",
-            'password' => bcrypt('davidmxm123'),
-            
+            'password' => Hash::make('davidmxm123'),
             'rol_id' => 1,
 
         ]);
