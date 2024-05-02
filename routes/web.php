@@ -1,9 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ExcelController;
-use App\Http\Controllers\ExcelIncapacidadesController;
-
 
 
 /*
@@ -16,15 +13,6 @@ use App\Http\Controllers\ExcelIncapacidadesController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/Excel', function () {
-    return view('Excel');
-});
-
-
-
-Route::get('/export-incapacidades', [ExcelIncapacidadesController::class, 'exportIncapacidades'])->name('export-incapacidades');
-
-Route::get('/export-users', [ExcelController::class, 'exportUsers'])->name('export-users');
 
 /*El miwdleware para acceder solamente con el token, solo los usuarios registrados puedan acceder al documento*/
 /*Implementar para que solamente el admin pueda descargar este registro */

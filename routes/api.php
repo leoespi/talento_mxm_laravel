@@ -8,6 +8,10 @@ use App\Http\Controllers\API\RolApiController;
 use App\Http\Controllers\Auth\AuthenticationController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\ExcelController;
+use App\Http\Controllers\ExcelIncapacidadesController;
+
+
 
 
 
@@ -52,6 +56,15 @@ Route::get("/perfil/ver", [PerfilController::class,'verPerfil']);
 
 Route::get('logout', [AuthController::class, "logout"])->middleware('auth:api');
    
+Route::get('/Excel', function () {
+    return view('Excel');
+});
+
+
+
+Route::get('/export-incapacidades', [ExcelIncapacidadesController::class, 'exportIncapacidades'])->name('export-incapacidades')->middleware('auth:api');
+
+Route::get('/export-users', [ExcelController::class, 'exportUsers'])->name('export-users')->middleware('auth:api');
 
 
 
