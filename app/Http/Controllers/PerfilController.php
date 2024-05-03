@@ -61,7 +61,6 @@ public function verPerfil()
         $perfil->name = $request->name;
         $perfil->cedula = $request->cedula;
         $perfil->email = $request->email;
-        $perfil->rol_id = $request->rol_id;
         $perfil->save();
 
 

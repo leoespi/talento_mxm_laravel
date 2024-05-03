@@ -74,7 +74,7 @@ class IncapacidadesController extends Controller
     
     public function destroy($id)
     {
-        $incapacidad = Incapacidades::findOrFail($id);
+        $incapacidad = Incapacidades::find($id);
         $incapacidad->delete();
 
         return response()->json(null, 204);

@@ -15,10 +15,6 @@ use App\Http\Controllers\ExcelIncapacidadesController;
 
 
 
-
-
-
-
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -29,11 +25,7 @@ Route::apiResource('rol', RolApiController::class);
 
 Route::get('/users', [UserApiController::class, 'index'])->middleware('auth:api');
 
-/*Route::delete('//{id}', [::class, 'destroy'])->middleware('auth:api');*/
-/*Route::get('/incapacidades', [IncapacidadesController::class, 'index'])->middleware('auth:api');*/
-/*Route::get('/incapacidades', [IncapacidadesController::class, 'index'])->middleware('auth:api');*/
-/*Route::get('incapacidades//all', [IncapacidadesController::class, 'indexall'])->middleware('auth:api');*/
-/*Route::post('incapacidades/store', [IncapacidadesController::class, 'store'])->middleware('auth:api');*/
+
 
 Route::apiResource('incapacidades', IncapacidadesController::class)->middleware('auth:api');
 
