@@ -23,6 +23,8 @@ class Incapacidades extends Model
         'aplica_cobro',
         'entidad_afiliada',
         'tipo_incapacidad',
+        'uuid',
+        'image',
         
         
     ];

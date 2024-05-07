@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Incapacidades;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Str;
 use App\Models\Incapacidades;
 use App\Http\Requests\IncapacidadesRequest;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -16,10 +17,13 @@ class IncapacidadesController extends Controller
 
     public function index()
     {
+
+        
         $incapacidades = Incapacidades::with('user')->latest()->get();
         return response([
             'incapacidades' => $incapacidades
         ], 200,[],JSON_NUMERIC_CHECK);
+
 
         
     }
@@ -30,23 +34,44 @@ class IncapacidadesController extends Controller
 
     public function store(Request $request)
 {
-    $request->validate([
-        'dias_incapacidad' => 'required|integer',
-        'fecha_inicio_incapacidad' => 'required|date',
-        'aplica_cobro' => 'required|boolean',
-        'entidad_afiliada' => 'required|string|max:50',
-        'tipo_incapacidad' => 'required|string|max:50',
-    ]);
 
-    // Crear la incapacidad utilizando los datos validados del request
+    $incapacidades = $request->all();
+    $incapacidades['uuid'] = (string) Str::uuid();
+
+
     $incapacidad = Incapacidades::create([
         "dias_incapacidad" => $request->dias_incapacidad,
         "fecha_inicio_incapacidad" => $request->fecha_inicio_incapacidad,
         "aplica_cobro" => $request->aplica_cobro,
         "entidad_afiliada" => $request->entidad_afiliada,
         "tipo_incapacidad" => $request->tipo_incapacidad,
+        'uuid' => (string) Str::orderedUuid(),
         "user_id" => $request->user_id
+        
     ]);
+
+    if($request->hasFile('image')){
+
+
+    $incapacidades['image'] = $request->file('image')->store('incapacidad_folder');
+
+    }
+   
+    
+
+
+    $request->validate([
+        'dias_incapacidad' => 'required|integer',
+        'fecha_inicio_incapacidad' => 'required|date',
+        'aplica_cobro' => 'required|boolean',
+        'entidad_afiliada' => 'required|string|max:50',
+        'tipo_incapacidad' => 'required|string|max:50',
+        'image' => 'required|string|max:50',
+    ]);
+
+
+    // Crear la incapacidad utilizando los datos validados del request
+    
 
     // Retornar la respuesta con la incapacidad creada
     return response()->json($incapacidad, 201);

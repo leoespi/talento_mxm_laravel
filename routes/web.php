@@ -1,6 +1,21 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Incapacidades\IncapacidadesController;
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+Route::get('incapacidades/{uuid}/download', [IncapacidadesController::class, 'download'])->name('incapacidades.download');
+Route::resource('incapacidades', IncapacidadesController::class)->middleware('auth');
+
+
 
 
 /*
