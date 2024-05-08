@@ -21,6 +21,7 @@ class IncapacidadesRequest extends FormRequest
             'aplica_cobro' => 'required|boolean',
             'entidad_afiliada' => 'required|string',
             'tipo_incapacidad' => 'required|string',
+            'image' => 'required|image|max:2048',
         ];
     }
 }
