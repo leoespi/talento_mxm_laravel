@@ -48,7 +48,7 @@ class IncapacidadesController extends Controller
         {
             $image = $request->file('image')->getClientOriginalName();
             $request->file('image')
-                ->storeAs('subfolder/' . $incapacidad->id, $image);
+                ->storeAs('incapacidad_folder/' . $incapacidad->id, $image);
             $incapacidad->update(['image' => $image]);
         }
         return response()->json($incapacidad, 201);
