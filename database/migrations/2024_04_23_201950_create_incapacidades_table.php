@@ -19,9 +19,9 @@ class CreateIncapacidadesTable extends Migration
             $table->foreign('user_id')->references('id')->on('users');
             $table->integer('dias_incapacidad');
             $table->date('fecha_inicio_incapacidad');
-            $table->boolean('aplica_cobro');
+            $table->boolean('aplica_cobro')->nullable();
             $table->string('entidad_afiliada', 50);
-            $table->string('tipo_incapacidad', 50);
+            $table->string('tipo_incapacidad', 50)->nullable();
             $table->uuid('uuid');
             $table->string('image')->nullable();
             $table->timestamps();
