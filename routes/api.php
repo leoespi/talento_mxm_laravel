@@ -28,7 +28,11 @@ Route::get('/users', [UserApiController::class, 'index'])->middleware('auth:api'
 
 
 Route::apiResource('incapacidades', IncapacidadesController::class)->middleware('auth:api');
-Route::get('incapacidades/{uuid}/download', [IncapacidadesController::class, 'download'])->name('incapacidades.download');
+Route::get('incapacidades/{uuid}/downloadFromDB', [IncapacidadesController::class, 'downloadFromDB'])->name('incapacidades.downloadFromDB');
+
+
+
+
 
 Route::get('/test', function () {
     return response([

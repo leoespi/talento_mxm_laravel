@@ -55,12 +55,27 @@ class IncapacidadesController extends Controller
     }
 
 
-   public function download($uuid)
+    public function downloadFromDB($uuid)
 {
     $incapacidad = Incapacidades::where('uuid', $uuid)->firstOrFail();
-    $pathToFile = storage_path("app/public/incapacidad_folder/$uuid/" . $incapacidad->image);
-    return response()->file($pathToFile);
+    
+    // Obtener la ruta completa de la imagen
+    $imagePath = storage_path("app/incapacidad_folder/{$incapacidad->id}/{$incapacidad->image}");
+    
+    // Verificar si la imagen existe
+    if (!file_exists($imagePath)) {
+        abort(404, 'La imagen no se encontró');
+    }
+    
+    // Obtener el tipo MIME de la imagen
+    $mimeType = mime_content_type($imagePath);
+    
+    // Devolver la imagen como una respuesta HTTP con el tipo MIME adecuado
+    return response()->file($imagePath, ['Content-Type' => $mimeType]);
 }
+
+    
+
 
 
 
