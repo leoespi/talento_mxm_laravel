@@ -79,21 +79,27 @@ class IncapacidadesController extends Controller
 
 
 
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'dias_incapacidad' => 'required|integer',
-            'fecha_inicio_incapacidad' => 'required|date',
-            'aplica_cobro' => 'required|boolean',
-            'entidad_afiliada' => 'required|string|max:50',
-            'tipo_incapacidad' => 'required|string|max:5',
-        ]);
-
-        $incapacidad = Incapacidades::findOrFail($id);
-        $incapacidad->update($request->all());
-
-        return response()->json($incapacidad, 200);
+public function update(Request $request, $id)
+{
+    $incapacidad = Incapacidades::find($id);
+    if(!$incapacidad) {
+        return response()->json(['message' => 'Incapacidad no encontrada'], 404);
     }
+    
+    $incapacidad->dias_incapacidad = $request->dias_incapacidad;
+    $incapacidad->fecha_inicio_incapacidad = $request->fecha_inicio_incapacidad;
+    $incapacidad->aplica_cobro = $request->aplica_cobro;
+    $incapacidad->entidad_afiliada = $request->entidad_afiliada;
+    $incapacidad->tipo_incapacidad = $request->tipo_incapacidad;
+    $incapacidad->user_id = $request->user_id;
+    $incapacidad->save();
+    
+    return response()->json($incapacidad);
+}
+
+
+
+ 
 
     
     public function destroy($id)
