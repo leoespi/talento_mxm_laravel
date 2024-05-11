@@ -86,16 +86,20 @@ public function update(Request $request, $id)
         return response()->json(['message' => 'Incapacidad no encontrada'], 404);
     }
     
-    $incapacidad->dias_incapacidad = $request->dias_incapacidad;
-    $incapacidad->fecha_inicio_incapacidad = $request->fecha_inicio_incapacidad;
-    $incapacidad->aplica_cobro = $request->aplica_cobro;
-    $incapacidad->entidad_afiliada = $request->entidad_afiliada;
-    $incapacidad->tipo_incapacidad = $request->tipo_incapacidad;
-    $incapacidad->user_id = $request->user_id;
+    // Solo actualiza los campos específicos si están presentes en la solicitud
+    if ($request->has('aplica_cobro')) {
+        $incapacidad->aplica_cobro = $request->aplica_cobro;
+    }
+    if ($request->has('tipo_incapacidad')) {
+        $incapacidad->tipo_incapacidad = $request->tipo_incapacidad;
+    }
+    
+    // Guarda los cambios en la base de datos
     $incapacidad->save();
     
     return response()->json($incapacidad);
 }
+
 
 
 
