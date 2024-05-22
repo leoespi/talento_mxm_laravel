@@ -20,7 +20,8 @@ class AuthController extends Controller
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string'
         ]);
-
+        
+        //Crear un nuevo usuario 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -50,6 +51,7 @@ class AuthController extends Controller
 
         $credentials = request(['email', 'password']);
 
+        //autenticar al usuario
         if (!Auth::attempt($credentials))
             return response()->json([
                 'message' => 'Unauthorized'

@@ -13,15 +13,18 @@ class PerfilController extends Controller
 {
 
     private $service;
+
+     // Inyección de dependencias del servicio FuncionesService 
     public function __construct(FuncionesService $service){
         $this->service = $service;
     }
 
-
+     // Método para almacenar un perfil asociado a un usuario autenticado
     public function store(Request $request)
 {
     $user = auth()->user();
 
+    // Crear un perfil asociado al usuario autenticado
     $perfil = $user->perfil()->create([
         'name' => $request->name,
         'cedula' => $request->cedula,
@@ -33,6 +36,7 @@ class PerfilController extends Controller
 }
 
 
+// Método para obtener el perfil del usuario autenticado
 public function verPerfil()
 {
     $user_id = $this->service->obtenerIdUserAutenticado();
@@ -47,7 +51,7 @@ public function verPerfil()
 }
 
 
-
+    // Método para actualizar el perfil del usuario autenticado
     public function update(Request $request)
     {
         $user = auth()->user();
@@ -67,7 +71,7 @@ public function verPerfil()
         return response()->json($perfil, 200);
     }
 
-
+    // Método para eliminar el perfil del usuario autenticado
     public function destroy()
     {
         $user = auth()->user();
