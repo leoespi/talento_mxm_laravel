@@ -18,6 +18,7 @@ class Incapacidades extends Model
     protected $fillable = [
         
         'user_id',
+        'tipo_incapacidad_reportada',
         'dias_incapacidad',
         'fecha_inicio_incapacidad',
         'aplica_cobro',

@@ -28,19 +28,17 @@ class IncapacidadesController extends Controller
         
     }
 
-    
-
-
 
     public function store(Request $request)
     {
         $incapacidad = Incapacidades::create([
             'uuid' => (string) Str::orderedUuid(),
+            "tipo_incapacidad_reportada" => $request->tipo_incapacidad_reportada,
             "dias_incapacidad" => $request->dias_incapacidad,
             "fecha_inicio_incapacidad" => $request->fecha_inicio_incapacidad,
             "aplica_cobro" => $request->aplica_cobro,
             "entidad_afiliada" => $request->entidad_afiliada,
-             "tipo_incapacidad" => $request->tipo_incapacidad,
+            "tipo_incapacidad" => $request->tipo_incapacidad,
             "user_id" => $request->user_id
         
         ]);

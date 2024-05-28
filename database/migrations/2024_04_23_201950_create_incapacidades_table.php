@@ -17,6 +17,7 @@ class CreateIncapacidadesTable extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
+            $table->string('tipo_incapacidad_reportada',50);
             $table->integer('dias_incapacidad');
             $table->date('fecha_inicio_incapacidad');
             $table->boolean('aplica_cobro')->nullable();
