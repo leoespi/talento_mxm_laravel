@@ -5,18 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-
-
 
 class Incapacidades extends Model
 {
-
     use HasFactory;
 
-
     protected $fillable = [
-        
         'user_id',
         'tipo_incapacidad_reportada',
         'dias_incapacidad',
@@ -25,17 +19,15 @@ class Incapacidades extends Model
         'entidad_afiliada',
         'tipo_incapacidad',
         'uuid',
-        'image',
-        
-        
+        'images',
     ];
 
-  
-    
+    protected $casts = [
+        'images' => 'array', // Cast JSON field to array
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
-
-
 }

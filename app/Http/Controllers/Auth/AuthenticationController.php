@@ -24,7 +24,7 @@ class AuthenticationController extends Controller
         ];
 
         $user = User::create($userData);
-        $token = $user->createToken('astroguide-laravel');
+        $token = $user->createToken('talento_mxm_laravel');
 
     // Acceder al token de texto plano
     $accessToken = $token->accessToken;
@@ -47,7 +47,7 @@ class AuthenticationController extends Controller
     }
 
     // Crear el token de acceso y obtener el token de texto plano
-    $token = $user->createToken('astroguide-laravel');
+    $token = $user->createToken('talento_mxm_laravel');
 
     // Acceder al token de texto plano
     $accessToken = $token->accessToken;

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Incapacidades;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+
+use Illuminate\Support\Facades\Validator; 
 use Illuminate\Support\Str;
 use App\Models\Incapacidades;
 use App\Http\Requests\IncapacidadesRequest;
@@ -31,46 +33,76 @@ class IncapacidadesController extends Controller
 
     public function store(Request $request)
     {
-        $incapacidad = Incapacidades::create([
-            'uuid' => (string) Str::orderedUuid(),
-            "tipo_incapacidad_reportada" => $request->tipo_incapacidad_reportada,
-            "dias_incapacidad" => $request->dias_incapacidad,
-            "fecha_inicio_incapacidad" => $request->fecha_inicio_incapacidad,
-            "aplica_cobro" => $request->aplica_cobro,
-            "entidad_afiliada" => $request->entidad_afiliada,
-            "tipo_incapacidad" => $request->tipo_incapacidad,
-            "user_id" => $request->user_id
-        
+        // Validar los datos entrantes
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|integer',
+            'tipoincapacidadreportada' => 'required|string|max:50',
+            'diasIncapacidad' => 'required|integer',
+            'fechaInicioIncapacidad' => 'required|date',
+            'entidadAfiliada' => 'required|string|max:50',
+            'images' => 'sometimes|array',
+            'images.*' => 'sometimes|file|mimes:jpg,jpeg,png,bmp|max:20000'
         ]);
-        if($request->hasFile('image'))
-        {
-            $image = $request->file('image')->getClientOriginalName();
-            $request->file('image')
-                ->storeAs('incapacidad_folder/' . $incapacidad->id, $image);
-            $incapacidad->update(['image' => $image]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
         }
-        return response()->json($incapacidad, 201);
+
+        try {
+            $incapacidad = Incapacidades::create([
+                'uuid' => (string) Str::orderedUuid(),
+                "tipo_incapacidad_reportada" => $request->tipoincapacidadreportada,
+                "dias_incapacidad" => $request->diasIncapacidad,
+                "fecha_inicio_incapacidad" => $request->fechaInicioIncapacidad,
+                "aplica_cobro" => $request->aplica_cobro,
+                "entidad_afiliada" => $request->entidadAfiliada,
+                "tipo_incapacidad" => $request->tipo_incapacidad,
+                "user_id" => $request->user_id
+            ]);
+
+            $images = [];
+            if($request->hasFile('images')) {
+                foreach ($request->file('images') as $image) {
+                    $imageName = $image->getClientOriginalName();
+                    $image->storeAs('incapacidad_folder/' . $incapacidad->id, $imageName);
+                    $images[] = $imageName;
+                }
+                $incapacidad->update(['images' => json_encode($images)]);
+            }
+
+            return response()->json($incapacidad, 201);
+        } catch (\Exception $e) {
+            Log::error('Error al crear la incapacidad: '.$e->getMessage());
+            return response()->json(['error' => 'Error al crear la incapacidad'], 500);
+        }
     }
 
 
     public function downloadFromDB($uuid)
 {
-    $incapacidad = Incapacidades::where('uuid', $uuid)->firstOrFail();
-    
-    // Obtener la ruta completa de la imagen
-    $imagePath = storage_path("app/incapacidad_folder/{$incapacidad->id}/{$incapacidad->image}");
-    
-    // Verificar si la imagen existe
-    if (!file_exists($imagePath)) {
-        abort(404, 'La imagen no se encontró');
+    try {
+        // Buscar la incapacidad por su UUID
+        $incapacidad = Incapacidades::where('uuid', $uuid)->firstOrFail();
+        
+        // Obtener la ruta completa de la imagen
+        $imagePath = storage_path("app/incapacidad_folder/{$incapacidad->id}/{$incapacidad->image}");
+        
+        // Verificar si la imagen existe
+        if (!file_exists($imagePath)) {
+            abort(404, 'La imagen no se encontró');
+        }
+        
+        // Obtener el tipo MIME de la imagen
+        $mimeType = mime_content_type($imagePath);
+        
+        // Devolver la imagen como una respuesta HTTP con el tipo MIME adecuado
+        return response()->file($imagePath, ['Content-Type' => $mimeType]);
+    } catch (\Exception $e) {
+        // Manejar cualquier error que pueda ocurrir
+        return response()->json(['error' => $e->getMessage()], 500);
     }
-    
-    // Obtener el tipo MIME de la imagen
-    $mimeType = mime_content_type($imagePath);
-    
-    // Devolver la imagen como una respuesta HTTP con el tipo MIME adecuado
-    return response()->file($imagePath, ['Content-Type' => $mimeType]);
 }
+
 
     
 

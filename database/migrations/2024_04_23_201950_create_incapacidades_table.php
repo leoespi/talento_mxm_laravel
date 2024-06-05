@@ -24,7 +24,7 @@ class CreateIncapacidadesTable extends Migration
             $table->string('entidad_afiliada', 50);
             $table->string('tipo_incapacidad', 50)->nullable();
             $table->uuid('uuid');
-            $table->string('image')->nullable();
+            $table->json('images')->nullable();
             $table->timestamps();
         });
 
