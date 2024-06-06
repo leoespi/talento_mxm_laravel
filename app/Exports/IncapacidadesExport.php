@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Exports;
 
 use App\Models\Incapacidades;
@@ -10,9 +9,19 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 
 class IncapacidadesExport implements FromCollection, WithHeadings, WithMapping
 {
+    protected $year;
+
+    public function __construct($year)
+    {
+        $this->year = $year;
+    }
+
     public function collection()
     {
-        return Incapacidades::with('user')->get();
+        // Filtrar las incapacidades por año seleccionado
+        return Incapacidades::with('user')
+            ->whereYear('fecha_inicio_incapacidad', $this->year)
+            ->get();
     }
 
     public function headings(): array
@@ -23,20 +32,24 @@ class IncapacidadesExport implements FromCollection, WithHeadings, WithMapping
     }
 
     public function map($incapacidad): array
-    {
-        return [
-            $incapacidad->id,
-            $incapacidad->user->name, // Acceder al nombre del usuario
-            $incapacidad->user->cedula,
-            $incapacidad->dias_incapacidad,
-            $incapacidad->fecha_inicio_incapacidad,
-            $incapacidad->aplica_cobro ? 'Sí' : 'No', // Convertir a 'Sí' o 'No'
-            $incapacidad->entidad_afiliada,
-            $incapacidad->tipo_incapacidad,
-            $incapacidad->tipo_incapacidad_reportada,
-            $incapacidad->image,
-            $incapacidad->created_at,
-            $incapacidad->updated_at,
-        ];
-    }
+{
+    $aplicaCobro = $incapacidad->aplica_cobro !== null ? ($incapacidad->aplica_cobro ? 'Sí' : 'No') : '';
+
+    return [
+        $incapacidad->id,
+        $incapacidad->user->name, // Acceder al nombre del usuario
+        $incapacidad->user->cedula,
+        $incapacidad->dias_incapacidad,
+        $incapacidad->fecha_inicio_incapacidad,
+        $aplicaCobro,
+        $incapacidad->entidad_afiliada,
+        $incapacidad->tipo_incapacidad,
+        $incapacidad->tipo_incapacidad_reportada,
+        $incapacidad->image,
+        $incapacidad->created_at,
+        $incapacidad->updated_at,
+    ];
+}
+
+
 }

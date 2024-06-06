@@ -6,18 +6,18 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\IncapacidadesExport;
 
-
 class ExcelIncapacidadesController extends Controller
 {
-    public function exportIncapacidades()
+    public function exportIncapacidades(Request $request)
     {
-        return Excel::download(new IncapacidadesExport, 'Incapacidades.xlsx');
-    }
+        $year = $request->query('year');
 
-    public function headings(): array
-    {
-        return [
-            'ID', 'User_id', 'Dias de incapacidad', 'Fecha inicio incapacidad', 'Aplica cobro', 'Eps Afiliada', 'Tipo de incapacidad', 'Fecha de Creación','Fecha de Actualización'
-        ];
+        // Si se proporciona un año, descargar las incapacidades solo para ese año
+        if ($year) {
+            return Excel::download(new IncapacidadesExport($year), 'Incapacidades_'.$year.'.xlsx');
+        } else {
+            // Si no se proporciona un año, descargar todas las incapacidades
+            return Excel::download(new IncapacidadesExport, 'Incapacidades.xlsx');
+        }
     }
 }
