@@ -60,6 +60,7 @@ Route::get('/Excel', function () {
 
 
 Route::get('/export-incapacidades', [ExcelIncapacidadesController::class, 'exportIncapacidades'])->name('export-incapacidades');
+Route::get('incapacidades/download-zip/{uuid}', [IncapacidadesController::class, 'downloadZip']);
 
 Route::get('/export-users', [ExcelController::class, 'exportUsers'])->name('export-users')->middleware('auth:api');
 

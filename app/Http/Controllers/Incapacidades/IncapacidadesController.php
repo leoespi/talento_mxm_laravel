@@ -104,11 +104,6 @@ class IncapacidadesController extends Controller
 }
 
 
-    
-
-
-
-
 public function update(Request $request, $id)
 {
     $incapacidad = Incapacidades::find($id);
@@ -131,9 +126,40 @@ public function update(Request $request, $id)
 }
 
 
+public function downloadZip($uuid)
+{
+    try {
+        // Buscar la incapacidad por su UUID
+        $incapacidad = Incapacidades::where('uuid', $uuid)->firstOrFail();
+        $images = json_decode($incapacidad->images);
 
+        if (empty($images)) {
+            return response()->json(['error' => 'No images found'], 404);
+        }
 
- 
+        $zip = new \ZipArchive();
+        $zipFileName = storage_path("app/incapacidad_folder/{$incapacidad->id}/incapacidad_{$uuid}.zip");
+
+        if ($zip->open($zipFileName, \ZipArchive::CREATE) === TRUE) {
+            foreach ($images as $image) {
+                $filePath = storage_path("app/incapacidad_folder/{$incapacidad->id}/$image");
+                if (file_exists($filePath)) {
+                    $zip->addFile($filePath, $image);
+                } else {
+                    Log::error("File not found: $filePath");
+                }
+            }
+            $zip->close();
+        } else {
+            return response()->json(['error' => 'Could not create ZIP file'], 500);
+        }
+
+        return response()->download($zipFileName)->deleteFileAfterSend(true);
+    } catch (\Exception $e) {
+        Log::error('Error al descargar las imágenes: ' . $e->getMessage());
+        return response()->json(['error' => 'Error al descargar las imágenes'], 500);
+    }
+}
 
     
     public function destroy($id)
@@ -144,9 +170,6 @@ public function update(Request $request, $id)
         return response()->json(null, 204);
     }
     
-
-
-
 
 }
 
