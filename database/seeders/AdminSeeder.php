@@ -33,6 +33,15 @@ class AdminSeeder extends Seeder{
             'rol_id' => 1,
 
         ]);
+
+        $user = User::create([
+            'name' => "PruebaComunicacion",
+            'cedula' => "1097092588", 
+            'email' => "comunicacion@gmail.com",
+            'password' => Hash::make('123456'),
+            'rol_id' => 3,
+
+        ]);
         
      }
 }

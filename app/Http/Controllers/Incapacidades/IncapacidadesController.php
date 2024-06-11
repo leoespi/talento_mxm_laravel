@@ -145,7 +145,7 @@ public function downloadZip($uuid)
                 $filePath = storage_path("app/incapacidad_folder/{$incapacidad->id}/$image");
                 if (file_exists($filePath)) {
                     $zip->addFile($filePath, $image);
-                } else {
+                } else {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
                     Log::error("File not found: $filePath");
                 }
             }

@@ -23,5 +23,10 @@ class RolSeeder extends Seeder
             'id' => 2,
             'nombre'=> "User",
         ]);
+
+        Rol::create([
+            'id' => 3,
+            'nombre'=> "Comunicacion",
+        ]);
     }
 }
