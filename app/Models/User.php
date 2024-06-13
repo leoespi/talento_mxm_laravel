@@ -51,5 +51,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(Incapacidades::class);
     }
+    
+    
+    public function Cesantias(): HasMany
+    {
+        return $this->hasMany(Incapacidades::class);
+    }
 
 }

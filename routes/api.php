@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Incapacidades\IncapacidadesController;
 use App\Http\Controllers\API\UserApiController;
 use App\Http\Controllers\API\RolApiController;
+
+use App\Http\Controllers\CesantiasController;
 use App\Http\Controllers\Auth\AuthenticationController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PerfilController;
@@ -29,6 +31,12 @@ Route::get('/users', [UserApiController::class, 'index'])->middleware('auth:api'
 
 Route::apiResource('incapacidades', IncapacidadesController::class)->middleware('auth:api');
 Route::get('incapacidades/{uuid}/downloadFromDB', [IncapacidadesController::class, 'downloadFromDB'])->name('incapacidades.downloadFromDB');
+ ///
+
+ ///
+Route::apiResource('cesantias', CesantiasController::class)->middleware('auth:api');
+Route::get('cesantias/{uuid}/downloadFromDB', [CesantiasController::class, 'downloadFromDB'])->name('cesantias.downloadFromDB');
+
 
 
 
