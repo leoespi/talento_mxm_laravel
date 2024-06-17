@@ -31,15 +31,11 @@ class CesantiasController extends Controller
 
 
     public function store(Request $request)
-
-    
 {
     Log::info('Datos recibidos en la solicitud:', $request->all());
 
     $validator = Validator::make($request->all(), [
         'user_id' => 'required|integer',
-       
-     
         'images' => 'sometimes|array',
         'images.*' => 'sometimes|file|mimes:jpg,jpeg,png,bmp|max:20000'
         

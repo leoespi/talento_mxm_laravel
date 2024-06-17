@@ -12,34 +12,36 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\ExcelIncapacidadesController;
+use App\Http\Controllers\ExcelCesantiasController;
 
 
 
 
 
+Route::put('/updateUser', [UserApiController::class, 'update'])->middleware('auth:api');
+
+Route::middleware('auth:api')->get('/user', function (Request $request) {
+    return $request->user();
+});
+Route::apiResource('user', UserApiController::class)->middleware('auth:api');
+Route::apiResource('rol', RolApiController::class);
+Route::get('/users', [UserApiController::class, 'index'])->middleware('auth:api');
+Route::get('/export-users', [ExcelController::class, 'exportUsers'])->name('export-users')->middleware('auth:api');
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
 
-Route::apiResource('user', UserApiController::class)->middleware('auth:api');
-Route::apiResource('rol', RolApiController::class);
-
-Route::get('/users', [UserApiController::class, 'index'])->middleware('auth:api');
-
-
-
 Route::apiResource('incapacidades', IncapacidadesController::class)->middleware('auth:api');
 Route::get('incapacidades/{uuid}/downloadFromDB', [IncapacidadesController::class, 'downloadFromDB'])->name('incapacidades.downloadFromDB');
- ///
+Route::get('/export-incapacidades', [ExcelIncapacidadesController::class, 'exportIncapacidades'])->name('export-incapacidades');
+Route::get('incapacidades/download-zip/{uuid}', [IncapacidadesController::class, 'downloadZip']);
 
- ///
-Route::apiResource('cesantias', CesantiasController::class)->middleware('auth:api');
-Route::get('cesantias/{uuid}/downloadFromDB', [CesantiasController::class, 'downloadFromDB'])->name('cesantias.downloadFromDB');
+
+
+ Route::apiResource('cesantias', CesantiasController::class)->middleware('auth:api');
 Route::get('cesantias/download-zip/{uuid}', [CesantiasController::class, 'downloadZip']);
-
-
-
+Route::get('/export-cesantias', [ExcelCesantiasController::class, 'exportCesantias'])->name('export-cesantias');
 
 
 
@@ -49,7 +51,6 @@ Route::get('/test', function () {
     ], 200);
 });
 
-Route::put('/updateUser', [UserApiController::class, 'update'])->middleware('auth:api');
 
 Route::post('register', [AuthenticationController::class, 'register']);
 
@@ -68,15 +69,7 @@ Route::get('/Excel', function () {
 
 
 
-Route::get('/export-incapacidades', [ExcelIncapacidadesController::class, 'exportIncapacidades'])->name('export-incapacidades');
-Route::get('incapacidades/download-zip/{uuid}', [IncapacidadesController::class, 'downloadZip']);
-
-Route::get('/export-users', [ExcelController::class, 'exportUsers'])->name('export-users')->middleware('auth:api');
 
 
-
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
 
 
