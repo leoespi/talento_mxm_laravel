@@ -31,14 +31,20 @@ class CesantiasController extends Controller
 
 
     public function store(Request $request)
+
+    
 {
+    Log::info('Datos recibidos en la solicitud:', $request->all());
+
     $validator = Validator::make($request->all(), [
         'user_id' => 'required|integer',
-        'tipo_cesantia_reportada' => 'required|string|max:50',
-        'estado' => 'required|string|max:50',
+       
+     
         'images' => 'sometimes|array',
         'images.*' => 'sometimes|file|mimes:jpg,jpeg,png,bmp|max:20000'
+        
     ]);
+    
 
     if ($validator->fails()) {
         return response()->json(['error' => $validator->errors()], 422);
@@ -47,7 +53,7 @@ class CesantiasController extends Controller
     try {
         $cesantias = Cesantias::create([
             'uuid' => (string) Str::orderedUuid(),
-            "tipo_cesantia_reportada" => $request->tipocesantiareportada,
+            "tipo_cesantia_reportada" => $request->tipo_cesantia_reportada,
             "estado" => $request->estado,
             "user_id" => $request->user_id
         ]);
@@ -70,7 +76,7 @@ class CesantiasController extends Controller
 }
 
 
-    public function downloadFromDB($uuid){
+    public function downloadFromDB($uuid){  
         try {
             // Buscar la cesantias por su UUID
             $cesantias = Cesantias::where('uuid', $uuid)->firstOrFail();

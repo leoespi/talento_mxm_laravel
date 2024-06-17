@@ -36,6 +36,7 @@ Route::get('incapacidades/{uuid}/downloadFromDB', [IncapacidadesController::clas
  ///
 Route::apiResource('cesantias', CesantiasController::class)->middleware('auth:api');
 Route::get('cesantias/{uuid}/downloadFromDB', [CesantiasController::class, 'downloadFromDB'])->name('cesantias.downloadFromDB');
+Route::get('cesantias/download-zip/{uuid}', [CesantiasController::class, 'downloadZip']);
 
 
 
