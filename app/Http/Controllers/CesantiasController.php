@@ -36,6 +36,7 @@ class CesantiasController extends Controller
 
     $validator = Validator::make($request->all(), [
         'user_id' => 'required|integer',
+        
         'images' => 'sometimes|array',
         'images.*' => 'sometimes|file|mimes:jpg,jpeg,png,bmp|max:20000'
         
@@ -49,7 +50,7 @@ class CesantiasController extends Controller
     try {
         $cesantias = Cesantias::create([
             'uuid' => (string) Str::orderedUuid(),
-            "tipo_cesantia_reportada" => $request->tipo_cesantia_reportada,
+            "tipo_cesantia_reportada" => $request->tipocesantiareportada,
             "estado" => $request->estado,
             "user_id" => $request->user_id
         ]);
