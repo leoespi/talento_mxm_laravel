@@ -161,7 +161,7 @@ public function destroy($id)
     $cesantias = Cesantias::find($id);
     $cesantias-> delete();
 
-    return response()->json(null,"Cesantia eliminada", 200);
+    return response()->json(null,"Cesantia eliminada", 204);
 }
 
 

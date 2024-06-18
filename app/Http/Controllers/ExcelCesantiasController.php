@@ -8,15 +8,9 @@ use App\Exports\CesantiasExport;
 
 class ExcelCesantiasController extends Controller
 {
-    public function exportCesantias()
+    public function exportCesantias($year)
     {
-        return Excel::download(new CesantiasExport, 'cesantias.xlsx');
-    }
-
-    public function headings(): array
-    {
-        return [
-            'ID',  'Cedula','Nombre', 'Tipo de solicitud','', 'Estado', 'Imagen', 
-        ];
+        return Excel::download(new CesantiasExport($year), 'cesantias_' . $year . '.xlsx');
     }
 }
+

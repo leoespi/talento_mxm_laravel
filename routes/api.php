@@ -41,7 +41,7 @@ Route::get('incapacidades/download-zip/{uuid}', [IncapacidadesController::class,
 
  Route::apiResource('cesantias', CesantiasController::class)->middleware('auth:api');
 Route::get('cesantias/download-zip/{uuid}', [CesantiasController::class, 'downloadZip']);
-Route::get('/export-cesantias', [ExcelCesantiasController::class, 'exportCesantias'])->name('export-cesantias');
+Route::get('/export-cesantias/{year}', [ExcelCesantiasController::class, 'exportCesantias'])->name('export-cesantias');
 
 
 
