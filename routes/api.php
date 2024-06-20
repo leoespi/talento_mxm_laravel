@@ -38,11 +38,23 @@ Route::get('/export-incapacidades', [ExcelIncapacidadesController::class, 'expor
 Route::get('incapacidades/download-zip/{uuid}', [IncapacidadesController::class, 'downloadZip']);
 
 
-
- Route::apiResource('cesantias', CesantiasController::class)->middleware('auth:api');
+//cesantias
+Route::apiResource('cesantias', CesantiasController::class)->middleware('auth:api');
 Route::get('cesantias/download-zip/{uuid}', [CesantiasController::class, 'downloadZip']);
 Route::get('/export-cesantias/{year}', [ExcelCesantiasController::class, 'exportCesantias'])->name('export-cesantias');
-Route::put('/cesantias/{id}/autorize', [CesantiasController::class, 'authorizeCesantia']);
+
+//cesantias autorizadas
+Route::put('/cesantias/{id}/authorize', [CesantiasController::class, 'authorizeCesantia']);
+Route::get('authorizedCesantia' , [CesantiasController::class,'indexCesantiasAutorizadas' ]);
+Route::get('authorizedCesantia/download-zip/{uuid}', [CesantiasController::class, 'downloadZipAutorized']);
+
+
+
+//cesantias denegadas
+Route::put('/cesantias/{id}/deny', [CesantiasController::class, 'denyCesantia']);
+Route::get('denyCesantia', [CesantiasController::class,'indexCesantiasDenegadas']);
+
+
 
 
 

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use App\Models\Cesantias;
 use App\Models\CesantiasAutorizadas;
+use App\Models\CesantiasDenegadas;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -28,6 +29,8 @@ class CesantiasController extends Controller
             'cesantias' => $cesantias
         ], 200,[],JSON_NUMERIC_CHECK);
     }
+
+
 
     public function store(Request $request)
     {
@@ -85,45 +88,8 @@ class CesantiasController extends Controller
         }
     }
 
-    public function authorizeCesantia($id)
-    {
-        try {
-            $cesantia = Cesantias::find($id);
 
-            if (!$cesantia) {
-                return response()->json(['error' => 'Cesantia no encontrada'], 404);
-            }
-
-            $authorizedCesantia = CesantiasAutorizadas::create([
-                'user_id' => $cesantia->user_id,
-                'tipo_cesantia_reportada' => $cesantia->tipo_cesantia_reportada,
-                'estado' => $cesantia->estado,
-                'uuid' => $cesantia->uuid,
-                'images' => $cesantia->images,
-            ]);
-
-            $cesantia->delete();
-            return response()->json($authorizedCesantia, 201);
-        } catch (\Exception $e) {
-            Log::error('Error al autorizar la cesantía: ' . $e->getMessage());
-            return response()->json(['error' => 'Error al autorizar la cesantía. Detalles en el registro de errores.'], 500);
-        }
-    }
-
-    public function update(Request $request, $id)
-    {
-        $cesantias = Cesantias::find($id);
-        if(!$cesantias) {
-            return response()->json(['message' => 'Cesantia no encontrada'], 404);
-        }
-
-        if ($request->has('estado')) {
-            $cesantias->estado = $request->estado;
-        }
-
-        $cesantias->save();
-        return response()->json($cesantias);
-    }
+    
 
     public function downloadZip($uuid)
     {
@@ -159,12 +125,147 @@ class CesantiasController extends Controller
         }
     }
 
+
+    
+    public function update(Request $request, $id)
+    {
+        $cesantias = Cesantias::find($id);
+        if(!$cesantias) {
+            return response()->json(['message' => 'Cesantia no encontrada'], 404);
+        }
+
+        if ($request->has('estado')) {
+            $cesantias->estado = $request->estado;
+        }
+
+        $cesantias->save();
+        return response()->json($cesantias);
+    }
+
+
     public function destroy($id)
     {
         $cesantias = Cesantias::find($id);
         $cesantias->delete();
         return response()->json(null, "Cesantia eliminada", 204);
     }
+
+
+
+
+    //Funciones de autorize cesantias 
+
+
+    public function indexCesantiasAutorizadas()
+    {
+        $authorizedCesantia = CesantiasAutorizadas::with('user')->latest()->get();
+        return response([
+            'authorizedCesantia' => $authorizedCesantia
+        ], 200,[],JSON_NUMERIC_CHECK);
+    }
+
+    public function authorizeCesantia($id)
+    {
+        try {
+            $cesantia = Cesantias::find($id);
+
+            if (!$cesantia) {
+                return response()->json(['error' => 'Cesantia no encontrada'], 404);
+            }
+
+            $authorizedCesantia = CesantiasAutorizadas::create([
+                'user_id' => $cesantia->user_id,
+                'tipo_cesantia_reportada' => $cesantia->tipo_cesantia_reportada,
+                'estado' => $cesantia->estado,
+                'uuid' => $cesantia->uuid,
+                'images' => $cesantia->images,
+            ]);
+
+            $cesantia->delete();
+            return response()->json($authorizedCesantia, 201);
+        } catch (\Exception $e) {
+            Log::error('Error al autorizar la cesantía: ' . $e->getMessage());
+            return response()->json(['error' => 'Error al autorizar la cesantía. Detalles en el registro de errores.'], 500);
+        }
+    }
+
+
+    public function downloadZipAutorized($uuid)
+    {
+        try {
+            $authorizedCesantia = CesantiasAutorizadas::where('uuid', $uuid)->firstOrFail();
+            $images = json_decode($cesantias->images);
+
+            if (empty($images)) {
+                return response()->json(['error' => 'No images found'], 404);
+            }
+
+            $zip = new \ZipArchive();
+            $zipFileName = storage_path("app/cesantias_folder/{$authorizedCesantia->id}/cesantias_{$uuid}.zip");
+
+            if ($zip->open($zipFileName, \ZipArchive::CREATE) === TRUE) {
+                foreach ($images as $image) {
+                    $filePath = storage_path("app/cesantias_folder/{$authorizedCesantia->id}/$image");
+                    if (file_exists($filePath)) {
+                        $zip->addFile($filePath, $image);
+                    } else {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                        Log::error("File not found: $filePath");
+                    }
+                }
+                $zip->close();
+            } else {
+                return response()->json(['error' => 'Could not create ZIP file'], 500);
+            }
+
+            return response()->download($zipFileName)->deleteFileAfterSend(true);
+        } catch (\Exception $e) {
+            Log::error('Error al descargar las imágenes: ' . $e->getMessage());
+            return response()->json(['error' => 'Error al descargar las imágenes'], 500);
+        }
+    }
+
+    
+
+
+    //Funciones Cesantias Denegadas 
+
+
+    public function indexCesantiasDenegadas()
+    {
+        $denyCesantia = CesantiasDenegadas::with('user')->latest()->get();
+        return response([
+            'denyCesantia' => $denyCesantia
+        ], 200,[],JSON_NUMERIC_CHECK);
+    }
+
+    public function denyCesantia($id)
+    {
+        try {
+            $cesantia = Cesantias::find($id);
+
+            if (!$cesantia) {
+                return response()->json(['error' => 'Cesantia no encontrada'], 404);
+            }
+
+            $denyCesantia = CesantiasDenegadas::create([
+                'user_id' => $cesantia->user_id,
+                'tipo_cesantia_reportada' => $cesantia->tipo_cesantia_reportada,
+                'estado' => $cesantia->estado,
+                'uuid' => $cesantia->uuid,
+                'images' => $cesantia->images,
+            ]);
+
+            $cesantia->delete();
+            return response()->json($denyCesantia, 201);
+        } catch (\Exception $e) {
+            Log::error('Error al autorizar la cesantía: ' . $e->getMessage());
+            return response()->json(['error' => 'Error al autorizar la cesantía. Detalles en el registro de errores.'], 500);
+        }
+    }
+
+
+
+
 
 
 }
