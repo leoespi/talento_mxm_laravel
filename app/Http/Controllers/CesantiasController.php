@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use App\Models\Cesantias;
 use App\Models\CesantiasAutorizadas;
 use App\Models\CesantiasDenegadas;
+use ZipArchive;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -153,7 +154,8 @@ class CesantiasController extends Controller
 
 
 
-    //Funciones de autorize cesantias 
+    //Funciones de  Cesantias Autorizadas
+    /******************************************************************* */ 
 
 
     public function indexCesantiasAutorizadas()
@@ -168,11 +170,12 @@ class CesantiasController extends Controller
     {
         try {
             $cesantia = Cesantias::find($id);
-
+    
             if (!$cesantia) {
                 return response()->json(['error' => 'Cesantia no encontrada'], 404);
             }
-
+    
+            // Crear la cesantía autorizada
             $authorizedCesantia = CesantiasAutorizadas::create([
                 'user_id' => $cesantia->user_id,
                 'tipo_cesantia_reportada' => $cesantia->tipo_cesantia_reportada,
@@ -180,54 +183,54 @@ class CesantiasController extends Controller
                 'uuid' => $cesantia->uuid,
                 'images' => $cesantia->images,
             ]);
+    
+            // Actualizar el estado de la cesantía original
+            $cesantia->estado = 'Autorizada';
+            $cesantia->save();
 
-            $cesantia->delete();
+            $authorizedCesantia->estado = 'Autorizada';
+            $authorizedCesantia ->save();
+
+    
             return response()->json($authorizedCesantia, 201);
         } catch (\Exception $e) {
             Log::error('Error al autorizar la cesantía: ' . $e->getMessage());
             return response()->json(['error' => 'Error al autorizar la cesantía. Detalles en el registro de errores.'], 500);
         }
     }
+    
 
-
-    public function downloadZipAutorized($uuid)
-    {
+    public function downloadFromDB_Authorized($uuid)
+    {  
         try {
             $authorizedCesantia = CesantiasAutorizadas::where('uuid', $uuid)->firstOrFail();
-            $images = json_decode($cesantias->images);
+            $imagePath = storage_path("app/cesantias_folder/{$authorizedCesantia->id}/{$authorizedCesantia->image}");
 
-            if (empty($images)) {
-                return response()->json(['error' => 'No images found'], 404);
+            if (!file_exists($imagePath)) {
+                abort(404, 'La imagen no se encontró');
             }
 
-            $zip = new \ZipArchive();
-            $zipFileName = storage_path("app/cesantias_folder/{$authorizedCesantia->id}/cesantias_{$uuid}.zip");
-
-            if ($zip->open($zipFileName, \ZipArchive::CREATE) === TRUE) {
-                foreach ($images as $image) {
-                    $filePath = storage_path("app/cesantias_folder/{$authorizedCesantia->id}/$image");
-                    if (file_exists($filePath)) {
-                        $zip->addFile($filePath, $image);
-                    } else {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-                        Log::error("File not found: $filePath");
-                    }
-                }
-                $zip->close();
-            } else {
-                return response()->json(['error' => 'Could not create ZIP file'], 500);
-            }
-
-            return response()->download($zipFileName)->deleteFileAfterSend(true);
+            $mimeType = mime_content_type($imagePath);
+            return response()->file($imagePath, ['Content-Type' => $mimeType]);
         } catch (\Exception $e) {
-            Log::error('Error al descargar las imágenes: ' . $e->getMessage());
-            return response()->json(['error' => 'Error al descargar las imágenes'], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
-    
+   
+
+    public function destroy_Authorized($id)
+    {
+        $authorizedCesantia = CesantiasAutorizadas::find($id);
+        $authorizedCesantia->delete();
+        return response()->json(null, "Cesantia eliminada", 204);
+    }
 
 
-    //Funciones Cesantias Denegadas 
+
+
+     //Funciones de  Cesantias Denegadas
+    /******************************************************************* */ 
 
 
     public function indexCesantiasDenegadas()
@@ -237,6 +240,7 @@ class CesantiasController extends Controller
             'denyCesantia' => $denyCesantia
         ], 200,[],JSON_NUMERIC_CHECK);
     }
+
 
     public function denyCesantia($id)
     {
@@ -255,13 +259,32 @@ class CesantiasController extends Controller
                 'images' => $cesantia->images,
             ]);
 
-            $cesantia->delete();
+            // Actualizar el estado de la cesantía original
+            $cesantia->estado = 'Denegada';
+            $cesantia->save();
+
+            $denyCesantia->estado = 'Denegada';
+            $denyCesantia ->save();
+
+
+
+
+
+            
             return response()->json($denyCesantia, 201);
         } catch (\Exception $e) {
             Log::error('Error al autorizar la cesantía: ' . $e->getMessage());
             return response()->json(['error' => 'Error al autorizar la cesantía. Detalles en el registro de errores.'], 500);
         }
     }
+
+    public function destroy_Deny($id)
+    {
+        $denyCesantia = CesantiasDenegadas::find($id);
+        $denyCesantia->delete();
+        return response()->json(null, "Cesantia eliminada", 204);
+    }
+
 
 
 

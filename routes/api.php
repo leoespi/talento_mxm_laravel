@@ -49,7 +49,6 @@ Route::get('authorizedCesantia' , [CesantiasController::class,'indexCesantiasAut
 Route::get('authorizedCesantia/download-zip/{uuid}', [CesantiasController::class, 'downloadZipAutorized']);
 
 
-
 //cesantias denegadas
 Route::put('/cesantias/{id}/deny', [CesantiasController::class, 'denyCesantia']);
 Route::get('denyCesantia', [CesantiasController::class,'indexCesantiasDenegadas']);
