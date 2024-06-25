@@ -22,7 +22,7 @@ class AdminSeeder extends Seeder{
             'cedula' => "1097092580", 
             'email' => "betsy.taboada@mxm.com.co",
             'password' => Hash::make('123456'),
-            'rol_id' => 1,
+            'rol_id' => 4,
 
         ]);
         
