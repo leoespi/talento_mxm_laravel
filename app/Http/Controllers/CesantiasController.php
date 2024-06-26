@@ -263,6 +263,7 @@ class CesantiasController extends Controller
             $cesantia->estado = 'Denegada';
             $cesantia->save();
 
+        
             $denyCesantia->estado = 'Denegada';
             $denyCesantia ->save();
 
@@ -277,6 +278,49 @@ class CesantiasController extends Controller
             return response()->json(['error' => 'Error al autorizar la cesantía. Detalles en el registro de errores.'], 500);
         }
     }
+
+
+    public function moveAuthorizedToDenied($id)
+{
+    try {
+        // Buscar la cesantía autorizada por su ID
+        $authorizedCesantia = CesantiasAutorizadas::find($id);
+
+        if (!$authorizedCesantia) {
+            return response()->json(['error' => 'Cesantía autorizada no encontrada'], 404);
+        }
+
+        // Crear la cesantía denegada basada en la información de la cesantía autorizada
+        $deniedCesantia = CesantiasDenegadas::create([
+            'user_id' => $authorizedCesantia->user_id,
+            'tipo_cesantia_reportada' => $authorizedCesantia->tipo_cesantia_reportada,
+            'estado' => 'Denegada', // Puedes establecer el estado directamente como 'Denegada'
+            'uuid' => $authorizedCesantia->uuid,
+            'images' => $authorizedCesantia->images,
+        ]);
+
+        // Eliminar la cesantía autorizada
+        $authorizedCesantia->delete();
+
+        // Actualizar el estado de la cesantía original (en caso de que se requiera)
+        $originalCesantia = Cesantias::where('uuid', $authorizedCesantia->uuid)->first();
+        if ($originalCesantia) {
+            $originalCesantia->estado = 'Denegada';
+            $originalCesantia->save();
+        }
+
+        return response()->json(['message' => 'Cesantía autorizada movida a denegada correctamente', 'deniedCesantia' => $deniedCesantia], 200);
+    } catch (\Exception $e) {
+        Log::error('Error al mover la cesantía autorizada a denegada: ' . $e->getMessage());
+        return response()->json(['error' => 'Error al mover la cesantía autorizada a denegada. Detalles en el registro de errores.'], 500);
+    }
+}
+
+
+
+
+
+
 
     public function destroy_Deny($id)
     {
