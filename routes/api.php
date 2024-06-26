@@ -18,6 +18,7 @@ use App\Http\Controllers\ExcelCesantiasController;
 
 
 
+
 Route::put('/updateUser', [UserApiController::class, 'update'])->middleware('auth:api');
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
