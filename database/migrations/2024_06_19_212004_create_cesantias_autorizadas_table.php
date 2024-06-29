@@ -19,6 +19,7 @@ class CreateCesantiasAutorizadasTable extends Migration
             $table->foreign('user_id')->references('id')->on('users');
             $table->string('tipo_cesantia_reportada', 50)->nullable();
             $table->string('estado', 50)->nullable();
+            $table->string('justificacion',500)->nullable();
             $table->uuid('uuid');
             $table->json('images')->nullable();
             $table->timestamps();

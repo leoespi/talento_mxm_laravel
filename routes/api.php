@@ -40,6 +40,7 @@ Route::get('incapacidades/download-zip/{uuid}', [IncapacidadesController::class,
 
 
 //cesantias
+Route::get('/cesantias/{uuid}/images-size', [CesantiasController::class, 'calculateImagesSizeInMB']);
 Route::apiResource('cesantias', CesantiasController::class)->middleware('auth:api')->middleware('auth:api');
 Route::get('cesantias/download-zip/{uuid}', [CesantiasController::class, 'downloadZip'])->middleware('auth:api');
 Route::get('/export-cesantias/{year}', [ExcelCesantiasController::class, 'exportCesantias'])->name('export-cesantias');
@@ -55,6 +56,8 @@ Route::put('/cesantias/{id}/deny', [CesantiasController::class, 'denyCesantia'])
 Route::put('/cesantias/{id}/denyadmin', [CesantiasController::class, 'moveAuthorizedToDenied'])->middleware('auth:api');
 Route::get('denyCesantia', [CesantiasController::class,'indexCesantiasDenegadas'])->middleware('auth:api');
 
+//cesantias aprobadas
+Route::post('cesantias/aprobar/{id}', [CesantiasController::class, 'AcceptCesantia']);
 
 
 

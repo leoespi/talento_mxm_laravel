@@ -16,14 +16,20 @@ class CesantiasAutorizadas extends Model
         'estado',
         'uuid',
         'images',
+        'cesantia_id', // Asegúrate de incluir la clave foránea
     ];
 
     protected $casts = [
-        'images' => 'array', 
+        'images' => 'array',
     ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function cesantias(): BelongsTo
+    {
+        return $this->belongsTo(Cesantias::class, 'cesantia_id');
     }
 }
