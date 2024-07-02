@@ -14,6 +14,7 @@ class CesantiasAutorizadas extends Model
         'user_id',
         'tipo_cesantia_reportada',
         'estado',
+        'justificacion',
         'uuid',
         'images',
         'cesantia_id', // Asegúrate de incluir la clave foránea

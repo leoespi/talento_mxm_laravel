@@ -241,8 +241,8 @@ class CesantiasController extends Controller
     public function AcceptCesantia(Request $request, $id)
 {
     try {
-        // Encontrar la cesantía autorizada por su ID, incluyendo la relación con Cesantias
-        $authorizedCesantia = CesantiasAutorizadas::with('cesantias')->find($id);
+        // Encontrar la cesantía autorizada por su ID, incluyendo la relación con Cesantias y User
+        $authorizedCesantia = CesantiasAutorizadas::with('cesantias', 'user')->find($id);
 
         // Verificar si la cesantía autorizada existe
         if (!$authorizedCesantia) {
@@ -259,23 +259,22 @@ class CesantiasController extends Controller
             return response()->json(['error' => $validator->errors()], 422);
         }
 
-       
         // Actualizar el estado de la cesantía Autorizada a aprobada
         $authorizedCesantia->estado = 'Aprobada';
         $authorizedCesantia->save();
 
+        // Enviar el correo electrónico de aprobación con la justificación y el nombre del usuario
+        Mail::to($authorizedCesantia->user->email)->send(new CesantiaAprobada(
+            $request->justificacion,
+            $authorizedCesantia->tipo_cesantia_reportada,
+            $authorizedCesantia->user->name // Nombre del usuario
+        ));
 
-        
-
-        // Enviar el correo electrónico de aprobación con la justificación
-        Mail::to($authorizedCesantia->user->email)->send(new CesantiaAprobada($request->justificacion));
-
-        // Retornar la cesantía autorizada actualizada en formato JSON
-        // Enviar la justificación también a la vista
+        // Retornar la vista de correo electrónico para mostrar la confirmación al usuario
         return view('emails.cesantia_aprobada', [
-           
-           
-            'justificacion' => $request->justificacion
+            'justificacion' => $request->justificacion,
+            'tipo_cesantia_reportada' => $authorizedCesantia->tipo_cesantia_reportada,
+            'nombre_usuario' => $authorizedCesantia->user->name,
         ]);
     } catch (\Exception $e) {
         // Capturar cualquier excepción y registrarla en el log
@@ -285,6 +284,8 @@ class CesantiasController extends Controller
         return response()->json(['error' => 'Error al aprobar la cesantía. Detalles en el registro de errores.'], 500);
     }
 }
+
+
 
 
     

@@ -13,6 +13,7 @@ class CesantiasDenegadas extends Model
         'user_id',
         'tipo_cesantia_reportada',
         'estado',
+        'justificacion',
         'uuid',
         'images',
     ];
