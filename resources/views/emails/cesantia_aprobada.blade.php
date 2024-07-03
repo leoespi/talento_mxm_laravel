@@ -36,7 +36,7 @@
 <body>
     <div class="container">
         <h1>Cesantía Aprobada</h1>
-        <p>Estimado {{ $nombre_usuario }},</p>
+        <p>Estimado <strong> {{ $nombre_usuario }} </strong> ,</p>
         <p>La cesantía de tipo <strong>{{ $tipo_cesantia_reportada }}</strong> ha sido aprobada.</p>
         <p>Justificación: {{ $justificacion }}</p>
         <p>Gracias,</p>

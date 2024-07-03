@@ -15,6 +15,7 @@ use App\Models\CesantiasDenegadas;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CesantiaAprobada;
+use App\Mail\CesantiaDenegada;
 
 
 
@@ -29,6 +30,13 @@ class CesantiasController extends Controller
 {
     
 
+
+    /**
+     * 
+     * CESANTIAS
+     * 
+     * */ 
+
     public function index()
     {
         $cesantias = Cesantias::with('user')->latest()->get();
@@ -37,7 +45,9 @@ class CesantiasController extends Controller
         ], 200,[],JSON_NUMERIC_CHECK);
     }
 
+    
 
+    //Calcular Peso de las imagenes de una cesantia en especifico 
     public function calculateImagesSizeInMB($uuid)
 {
     try {
@@ -66,7 +76,7 @@ class CesantiasController extends Controller
 }
 
 
-
+    //Almacenar Cesantias
     public function store(Request $request)
     {
         Log::info('Datos recibidos en la solicitud:', $request->all());
@@ -106,6 +116,7 @@ class CesantiasController extends Controller
         }
     }
 
+    //Descargar Cesantias (creo que debo de quitar eso pq no se usa )
     public function downloadFromDB($uuid)
     {  
         try {
@@ -125,7 +136,7 @@ class CesantiasController extends Controller
 
 
     
-
+    //Descargar Cesantias en ZIP 
     public function downloadZip($uuid)
     {
         try {
@@ -161,23 +172,7 @@ class CesantiasController extends Controller
     }
 
 
-    
-    public function update(Request $request, $id)
-    {
-        $cesantias = Cesantias::find($id);
-        if(!$cesantias) {
-            return response()->json(['message' => 'Cesantia no encontrada'], 404);
-        }
-
-        if ($request->has('estado')) {
-            $cesantias->estado = $request->estado;
-        }
-
-        $cesantias->save();
-        return response()->json($cesantias);
-    }
-
-
+    //Eliminar cesantias (No se usa pero esta )
     public function destroy($id)
     {
         $cesantias = Cesantias::find($id);
@@ -232,12 +227,66 @@ class CesantiasController extends Controller
             return response()->json(['error' => 'Error al autorizar la cesantía. Detalles en el registro de errores.'], 500);
         }
     }
-    
-    //Funcion Cesantias Aprobadas
-    /******************************************************************* */
-    //Aprobar cesantia autorizada por el admin
-    //Corregir que la funcion solo envie el correo 
-    //y cambie el estado a Aprobado en la tabla de autorizadas y en la de cesantias en revision 
+
+    //Denegar desde el Superadmin (Autorizada a denegada)
+    public function moveAuthorizedToDenied($id)
+{
+    try {
+        // Buscar la cesantía autorizada por su ID
+        $authorizedCesantia = CesantiasAutorizadas::find($id);
+
+        if (!$authorizedCesantia) {
+            return response()->json(['error' => 'Cesantía autorizada no encontrada'], 404);
+        }
+
+        // Crear la cesantía denegada basada en la información de la cesantía autorizada
+        $deniedCesantia = CesantiasDenegadas::create([
+            'user_id' => $authorizedCesantia->user_id,
+            'tipo_cesantia_reportada' => $authorizedCesantia->tipo_cesantia_reportada,
+            'estado' => 'Denegada', // Puedes establecer el estado directamente como 'Denegada'
+            'uuid' => $authorizedCesantia->uuid,
+            'images' => $authorizedCesantia->images,
+        ]);
+
+        // Eliminar la cesantía autorizada
+        $authorizedCesantia->delete();
+
+        // Actualizar el estado de la cesantía original (en caso de que se requiera)
+        $originalCesantia = Cesantias::where('uuid', $authorizedCesantia->uuid)->first();
+        if ($originalCesantia) {
+            $originalCesantia->estado = 'Denegada';
+            $originalCesantia->save();
+        }
+
+        return response()->json(['message' => 'Cesantía autorizada movida a denegada correctamente', 'deniedCesantia' => $deniedCesantia], 200);
+    } catch (\Exception $e) {
+        Log::error('Error al mover la cesantía autorizada a denegada: ' . $e->getMessage());
+        return response()->json(['error' => 'Error al mover la cesantía autorizada a denegada. Detalles en el registro de errores.'], 500);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /***
+     * CESANTIAS APROBADAS 
+     * 
+     * cambie el estado a Aprobado en la tabla de autorizadas y en la de cesantias en revision
+     */
+     
     public function AcceptCesantia(Request $request, $id)
 {
     try {
@@ -263,6 +312,8 @@ class CesantiasController extends Controller
         $authorizedCesantia->estado = 'Aprobada';
         $authorizedCesantia->save();
 
+        
+
         // Enviar el correo electrónico de aprobación con la justificación y el nombre del usuario
         Mail::to($authorizedCesantia->user->email)->send(new CesantiaAprobada(
             $request->justificacion,
@@ -286,38 +337,8 @@ class CesantiasController extends Controller
 }
 
 
-
-
-    
-    
-    
-
-    /******************************************************************* */
-    /******************************************************************* */
-
-    
-
-
-    
-    public function downloadFromDB_Authorized($uuid)
-    {  
-        try {
-            $authorizedCesantia = CesantiasAutorizadas::where('uuid', $uuid)->firstOrFail();
-            $imagePath = storage_path("app/cesantias_folder/{$authorizedCesantia->id}/{$authorizedCesantia->image}");
-
-            if (!file_exists($imagePath)) {
-                abort(404, 'La imagen no se encontró');
-            }
-
-            $mimeType = mime_content_type($imagePath);
-            return response()->file($imagePath, ['Content-Type' => $mimeType]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
-
    
-
+    //Eliminar cesantias autorizadas 
     public function destroy_Authorized($id)
     {
         $authorizedCesantia = CesantiasAutorizadas::find($id);
@@ -328,9 +349,18 @@ class CesantiasController extends Controller
 
 
 
-     //Funciones de  Cesantias Denegadas
+
+
+
+     
     /******************************************************************* */ 
 
+
+    /***
+     * 
+     * CESANTIAS DENEGADAS
+     * 
+     */
 
     public function indexCesantiasDenegadas()
     {
@@ -341,7 +371,61 @@ class CesantiasController extends Controller
     }
 
 
-    public function denyCesantia(Request $request, $id)
+    public function DenyCesantia(Request $request, $id)
+    {
+        try {
+            // Encontrar la cesantía por su ID, incluyendo la relación con User
+            $cesantia = Cesantias::with('user')->find($id);
+    
+            // Verificar si la cesantía existe
+            if (!$cesantia) {
+                return response()->json(['error' => 'Cesantia no encontrada'], 404);
+            }
+    
+            // Validar que la justificación esté presente
+            $validator = Validator::make($request->all(), [
+                'justificacion' => 'required|string'
+            ]);
+    
+            // Si la validación falla, devolver errores de validación
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 422);
+            }
+    
+            // Actualizar el estado de la cesantía a Denegada
+            $cesantia->estado = 'Denegada';
+            $cesantia->save();
+    
+            // Enviar el correo electrónico de denegación con la justificación y el nombre del usuario
+            Mail::to($cesantia->user->email)->send(new CesantiaDenegada(
+                $request->justificacion,
+                $cesantia->tipo_cesantia_reportada,
+                $cesantia->user->name // Nombre del usuario
+            ));
+    
+            // Retornar la vista de correo electrónico para mostrar la confirmación al usuario
+            return view('emails.cesantia_denegada', [
+                'justificacion' => $request->justificacion,
+                'tipo_cesantia_reportada' => $cesantia->tipo_cesantia_reportada,
+                'nombre_usuario' => $cesantia->user->name,
+            ]);
+    
+        } catch (\Exception $e) {
+            // Capturar cualquier excepción y registrarla en el log
+            Log::error('Error al denegar la cesantía: ' . $e->getMessage());
+    
+            // Retornar un mensaje de error genérico con código 500
+            return response()->json(['error' => 'Error al denegar la cesantía. Detalles en el registro de errores.'], 500);
+        }
+    }
+
+
+
+
+    /****
+     * 
+     *
+     * public function denyCesantia(Request $request, $id)
 {
     try {
         $cesantia = Cesantias::find($id);
@@ -383,47 +467,10 @@ class CesantiasController extends Controller
         return response()->json(['error' => 'Error al denegar la cesantía. Detalles en el registro de errores.'], 500);
     }
 }
-
-
-    public function moveAuthorizedToDenied($id)
-{
-    try {
-        // Buscar la cesantía autorizada por su ID
-        $authorizedCesantia = CesantiasAutorizadas::find($id);
-
-        if (!$authorizedCesantia) {
-            return response()->json(['error' => 'Cesantía autorizada no encontrada'], 404);
-        }
-
-        // Crear la cesantía denegada basada en la información de la cesantía autorizada
-        $deniedCesantia = CesantiasDenegadas::create([
-            'user_id' => $authorizedCesantia->user_id,
-            'tipo_cesantia_reportada' => $authorizedCesantia->tipo_cesantia_reportada,
-            'estado' => 'Denegada', // Puedes establecer el estado directamente como 'Denegada'
-            'uuid' => $authorizedCesantia->uuid,
-            'images' => $authorizedCesantia->images,
-        ]);
-
-        // Eliminar la cesantía autorizada
-        $authorizedCesantia->delete();
-
-        // Actualizar el estado de la cesantía original (en caso de que se requiera)
-        $originalCesantia = Cesantias::where('uuid', $authorizedCesantia->uuid)->first();
-        if ($originalCesantia) {
-            $originalCesantia->estado = 'Denegada';
-            $originalCesantia->save();
-        }
-
-        return response()->json(['message' => 'Cesantía autorizada movida a denegada correctamente', 'deniedCesantia' => $deniedCesantia], 200);
-    } catch (\Exception $e) {
-        Log::error('Error al mover la cesantía autorizada a denegada: ' . $e->getMessage());
-        return response()->json(['error' => 'Error al mover la cesantía autorizada a denegada. Detalles en el registro de errores.'], 500);
-    }
-}
-
-
-
-
+ 
+     * 
+     */
+    
 
 
 

@@ -56,6 +56,12 @@ Route::put('/cesantias/{id}/deny', [CesantiasController::class, 'denyCesantia'])
 Route::put('/cesantias/{id}/denyadmin', [CesantiasController::class, 'moveAuthorizedToDenied'])->middleware('auth:api');
 Route::get('denyCesantia', [CesantiasController::class,'indexCesantiasDenegadas'])->middleware('auth:api');
 
+
+//Cesantias Denegadas
+Route::post('cesantias/deny/{id}', [CesantiasController::class, 'DenyCesantia']);
+
+
+
 //cesantias aprobadas
 Route::post('cesantias/aprobar/{id}', [CesantiasController::class, 'AcceptCesantia']);
 
