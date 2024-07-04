@@ -30,7 +30,11 @@ class CesantiasAutorizadas extends Model
     }
 
     public function cesantias(): BelongsTo
-    {
-        return $this->belongsTo(Cesantias::class, 'cesantia_id');
-    }
+{
+    return $this->belongsTo(Cesantias::class, 'cesantia_id');
+}
+
+
+ 
+
 }

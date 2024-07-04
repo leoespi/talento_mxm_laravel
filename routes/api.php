@@ -53,13 +53,17 @@ Route::get('authorizedCesantia/download-zip/{uuid}', [CesantiasController::class
 
 //cesantias denegadas
 Route::put('/cesantias/{id}/deny', [CesantiasController::class, 'denyCesantia'])->middleware('auth:api');
-Route::put('/cesantias/{id}/denyadmin', [CesantiasController::class, 'moveAuthorizedToDenied'])->middleware('auth:api');
+
 Route::get('denyCesantia', [CesantiasController::class,'indexCesantiasDenegadas'])->middleware('auth:api');
 
 
-//Cesantias Denegadas
+//Cesantias Denegadas admin 
 Route::post('cesantias/deny/{id}', [CesantiasController::class, 'DenyCesantia']);
 
+
+
+//Denegar cesantias superadmin
+Route::post('/cesantias/denyadmin/{id}', [CesantiasController::class, 'DenyAuthorizedCesantia']);
 
 
 //cesantias aprobadas
