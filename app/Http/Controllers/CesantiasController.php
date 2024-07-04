@@ -195,20 +195,39 @@ class CesantiasController extends Controller
         ], 200,[],JSON_NUMERIC_CHECK);
     }
 
+
+
     public function authorizeCesantia($id)
     {
         try {
+            // Encontrar la cesantía por su ID
             $cesantia = Cesantias::find($id);
     
+            // Verificar si la cesantía existe
             if (!$cesantia) {
                 return response()->json(['error' => 'Cesantia no encontrada'], 404);
+            }
+    
+            // Verificar si la cesantía está en estado 'Denegada'
+            if ($cesantia->estado === 'Denegada') {
+                return response()->json(['error' => 'La cesantía no puede ser autorizada porque está denegada'], 422);
+            }
+    
+            // Verificar si la cesantía ya está autorizada
+            $authorizedCesantia = CesantiasAutorizadas::where('uuid', $cesantia->uuid)
+                                    ->where('estado', 'Autorizada')
+                                    ->exists();
+    
+            // Si la cesantía ya está autorizada, no se puede autorizar nuevamente
+            if ($authorizedCesantia) {
+                return response()->json(['error' => 'La cesantía ya ha sido autorizada previamente'], 422);
             }
     
             // Crear la cesantía autorizada
             $authorizedCesantia = CesantiasAutorizadas::create([
                 'user_id' => $cesantia->user_id,
                 'tipo_cesantia_reportada' => $cesantia->tipo_cesantia_reportada,
-                'estado' => $cesantia->estado,
+                'estado' => 'Autorizada',
                 'uuid' => $cesantia->uuid,
                 'images' => $cesantia->images,
             ]);
@@ -216,10 +235,6 @@ class CesantiasController extends Controller
             // Actualizar el estado de la cesantía original
             $cesantia->estado = 'Autorizada';
             $cesantia->save();
-
-            $authorizedCesantia->estado = 'Autorizada';
-            $authorizedCesantia ->save();
-
     
             return response()->json($authorizedCesantia, 201);
         } catch (\Exception $e) {
@@ -227,6 +242,8 @@ class CesantiasController extends Controller
             return response()->json(['error' => 'Error al autorizar la cesantía. Detalles en el registro de errores.'], 500);
         }
     }
+    
+
 
 
     //Denegar desde el Superadmin (Autorizada a denegada)
@@ -279,30 +296,6 @@ class CesantiasController extends Controller
     }
     
 }
-
-
-    
-    
-
-    
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /***
@@ -396,52 +389,65 @@ class CesantiasController extends Controller
 
 
     public function DenyCesantia(Request $request, $id)
-    {
-        try {
-            // Encontrar la cesantía por su ID, incluyendo la relación con User
-            $cesantia = Cesantias::with('user')->find($id);
-    
-            // Verificar si la cesantía existe
-            if (!$cesantia) {
-                return response()->json(['error' => 'Cesantia no encontrada'], 404);
-            }
-    
-            // Validar que la justificación esté presente
-            $validator = Validator::make($request->all(), [
-                'justificacion' => 'required|string'
-            ]);
-    
-            // Si la validación falla, devolver errores de validación
-            if ($validator->fails()) {
-                return response()->json(['error' => $validator->errors()], 422);
-            }
-    
-            // Actualizar el estado de la cesantía a Denegada
-            $cesantia->estado = 'Denegada';
-            $cesantia->save();
-    
-            // Enviar el correo electrónico de denegación con la justificación y el nombre del usuario
-            Mail::to($cesantia->user->email)->send(new CesantiaDenegada(
-                $request->justificacion,
-                $cesantia->tipo_cesantia_reportada,
-                $cesantia->user->name // Nombre del usuario
-            ));
-    
-            // Retornar la vista de correo electrónico para mostrar la confirmación al usuario
-            return view('emails.cesantia_denegada', [
-                'justificacion' => $request->justificacion,
-                'tipo_cesantia_reportada' => $cesantia->tipo_cesantia_reportada,
-                'nombre_usuario' => $cesantia->user->name,
-            ]);
-    
-        } catch (\Exception $e) {
-            // Capturar cualquier excepción y registrarla en el log
-            Log::error('Error al denegar la cesantía: ' . $e->getMessage());
-    
-            // Retornar un mensaje de error genérico con código 500
-            return response()->json(['error' => 'Error al denegar la cesantía. Detalles en el registro de errores.'], 500);
+{
+    try {
+        // Encontrar la cesantía por su ID, incluyendo la relación con User
+        $cesantia = Cesantias::with('user')->find($id);
+
+        // Verificar si la cesantía existe
+        if (!$cesantia) {
+            return response()->json(['error' => 'Cesantia no encontrada'], 404);
         }
+
+        // Verificar si la cesantía está autorizada en la tabla Cesantias
+        if ($cesantia->estado === 'Autorizada') {
+            return response()->json(['error' => 'La cesantía está autorizada. No puede ser denegada'], 422);
+        }
+
+        // Verificar si la cesantía está denegada en la tabla Cesantias
+        if ($cesantia->estado === 'Denegada') {
+            return response()->json(['error' => 'La cesantía ya ha sido denegada previamente'], 422);
+        }
+
+        // Validar que la justificación esté presente
+        $validator = Validator::make($request->all(), [
+            'justificacion' => 'required|string'
+        ]);
+
+        // Si la validación falla, devolver errores de validación
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
+        // Actualizar el estado de la cesantía a Denegada
+        $cesantia->estado = 'Denegada';
+        $cesantia->save();
+
+        // Enviar el correo electrónico de denegación con la justificación y el nombre del usuario
+        Mail::to($cesantia->user->email)->send(new CesantiaDenegada(
+            $request->justificacion,
+            $cesantia->tipo_cesantia_reportada,
+            $cesantia->user->name // Nombre del usuario
+        ));
+
+        // Retornar la vista de correo electrónico para mostrar la confirmación al usuario
+        return view('emails.cesantia_denegada', [
+            'justificacion' => $request->justificacion,
+            'tipo_cesantia_reportada' => $cesantia->tipo_cesantia_reportada,
+            'nombre_usuario' => $cesantia->user->name,
+        ]);
+
+    } catch (\Exception $e) {
+        // Capturar cualquier excepción y registrarla en el log
+        Log::error('Error al denegar la cesantía: ' . $e->getMessage());
+
+        // Retornar un mensaje de error genérico con código 500
+        return response()->json(['error' => 'Error al denegar la cesantía. Detalles en el registro de errores.'], 500);
     }
+}
+
+
+    
 
 
 
