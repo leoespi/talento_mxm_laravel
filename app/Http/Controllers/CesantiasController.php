@@ -47,33 +47,7 @@ class CesantiasController extends Controller
 
     
 
-    //Calcular Peso de las imagenes de una cesantia en especifico 
-    public function calculateImagesSizeInMB($uuid)
-{
-    try {
-        $cesantia = Cesantias::where('uuid', $uuid)->firstOrFail();
-        $directory = storage_path("app/cesantias_folder/{$cesantia->id}");
-        $totalSize = 0;
-
-        if (file_exists($directory)) {
-            $files = scandir($directory);
-
-            foreach ($files as $file) {
-                if ($file !== '.' && $file !== '..') {
-                    $filePath = $directory . DIRECTORY_SEPARATOR . $file;
-                    $totalSize += filesize($filePath);
-                }
-            }
-        }
-
-        $sizeInMB = $totalSize / (1024 * 1024); // Convertir bytes a megabytes
-
-        return $sizeInMB; // Devuelve el tamaño total en megabytes de las imágenes de la cesantía
-    } catch (\Exception $e) {
-        Log::error('Error al calcular el tamaño de las imágenes: ' . $e->getMessage());
-        return -1; // Retorna un valor indicativo de error o no encontrado
-    }
-}
+   
 
 
     //Almacenar Cesantias
@@ -115,6 +89,8 @@ class CesantiasController extends Controller
             return response()->json(['error' => 'Error al crear la cesantia. Detalles en el registro de errores.'], 500);
         }
     }
+
+
 
     //Descargar Cesantias (creo que debo de quitar eso pq no se usa )
     public function downloadFromDB($uuid)
@@ -245,7 +221,6 @@ class CesantiasController extends Controller
     
 
 
-
     //Denegar desde el Superadmin (Autorizada a denegada)
     public function DenyAuthorizedCesantia(Request $request, $id)
 {
@@ -258,6 +233,26 @@ class CesantiasController extends Controller
         if (!$authorizedCesantia) {
             return response()->json(['error' => 'Cesantia no encontrada'], 404);
         }
+
+        /*********************************/ 
+        
+        // Verificar si la cesantía está autorizada en la tabla Cesantias
+        if ($authorizedCesantia->estado === 'Aprobada') {
+            return response()->json(['error' => 'La cesantía está aprobada. No puede ser denegada'], 422);
+        }
+
+        // Verificar si la cesantía está denegada en la tabla Cesantias
+        if ($authorizedCesantia->estado === 'Denegada') {
+            return response()->json(['error' => 'La cesantía ya ha sido denegada previamente'], 422);
+        }
+
+
+
+
+
+
+
+        /****************************** */
 
         // Validar que la justificación esté presente
         $validator = Validator::make($request->all(), [
@@ -315,6 +310,19 @@ class CesantiasController extends Controller
             return response()->json(['error' => 'Cesantia Autorizada no encontrada'], 404);
         }
 
+
+        // Verificar si la cesantía está en estado 'Denegada'
+        if ($authorizedCesantia->estado === 'Denegada') {
+            return response()->json(['error' => 'La cesantía no puede ser Aprobada porque está denegada'], 422);
+        }
+
+        // Verificar si la cesantía ya está aprobada
+        if ($authorizedCesantia->estado === 'Aprobada') {
+            return response()->json(['error' => 'La cesantía no puede ser Aprobada porque ya esta aprobada'], 422);
+        }
+
+        //*////////////////
+
         // Validar que la justificación esté presente
         $validator = Validator::make($request->all(), [
             'justificacion' => 'required|string'
@@ -352,6 +360,7 @@ class CesantiasController extends Controller
         return response()->json(['error' => 'Error al aprobar la cesantía. Detalles en el registro de errores.'], 500);
     }
 }
+
 
 
    
@@ -510,6 +519,36 @@ class CesantiasController extends Controller
         $denyCesantia->delete();
         return response()->json(null, "Cesantia eliminada", 204);
     }
+
+
+
+     //Calcular Peso de las imagenes de una cesantia en especifico 
+     public function calculateImagesSizeInMB($uuid)
+     {
+         try {
+             $cesantia = Cesantias::where('uuid', $uuid)->firstOrFail();
+             $directory = storage_path("app/cesantias_folder/{$cesantia->id}");
+             $totalSize = 0;
+     
+             if (file_exists($directory)) {
+                 $files = scandir($directory);
+     
+                 foreach ($files as $file) {
+                     if ($file !== '.' && $file !== '..') {
+                         $filePath = $directory . DIRECTORY_SEPARATOR . $file;
+                         $totalSize += filesize($filePath);
+                     }
+                 }
+             }
+     
+             $sizeInMB = $totalSize / (1024 * 1024); // Convertir bytes a megabytes
+     
+             return $sizeInMB; // Devuelve el tamaño total en megabytes de las imágenes de la cesantía
+         } catch (\Exception $e) {
+             Log::error('Error al calcular el tamaño de las imágenes: ' . $e->getMessage());
+             return -1; // Retorna un valor indicativo de error o no encontrado
+         }
+     }
 
 
 
