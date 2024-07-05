@@ -188,6 +188,14 @@ class CesantiasController extends Controller
             if ($cesantia->estado === 'Denegada') {
                 return response()->json(['error' => 'La cesantía no puede ser autorizada porque está denegada'], 422);
             }
+
+
+              
+             
+             
+          
+            
+
     
             // Verificar si la cesantía ya está autorizada
             $authorizedCesantia = CesantiasAutorizadas::where('uuid', $cesantia->uuid)
@@ -247,11 +255,21 @@ class CesantiasController extends Controller
         }
 
 
+       
 
+        /**
+         * Que cuando se deniegue la cesantia por parte del admin se cambie
+         * el estado de las cesantias en revision a denegada
+         */
+        $cesantia = Cesantias::where('uuid', $authorizedCesantia->uuid)
+        ->where('estado', 'Autorizada')
+        ->first(); // Obtenemos el primer registro que cumple con los criterios
 
-
-
-
+        if ($cesantia) {
+        // Cambiamos el estado a 'Aprobada'
+        $cesantia->estado = 'Denegada';
+        $cesantia->save();
+        }
         /****************************** */
 
         // Validar que la justificación esté presente
@@ -321,7 +339,9 @@ class CesantiasController extends Controller
             return response()->json(['error' => 'La cesantía no puede ser Aprobada porque ya esta aprobada'], 422);
         }
 
-        //*////////////////
+        
+
+        
 
         // Validar que la justificación esté presente
         $validator = Validator::make($request->all(), [
@@ -336,6 +356,20 @@ class CesantiasController extends Controller
         // Actualizar el estado de la cesantía Autorizada a aprobada
         $authorizedCesantia->estado = 'Aprobada';
         $authorizedCesantia->save();
+
+         /**
+          * Que cuando se Apruebe la cesantia  se cambie 
+          * el estado de las cesantias en revision a aprobada
+          */
+        $cesantia = Cesantias::where('uuid', $authorizedCesantia->uuid)
+                    ->where('estado', 'Autorizada')
+                    ->first(); // Obtenemos el primer registro que cumple con los criterios
+
+        if ($cesantia) {
+            // Cambiamos el estado a 'Aprobada'
+            $cesantia->estado = 'Aprobada';
+            $cesantia->save();
+        }
 
         
 
