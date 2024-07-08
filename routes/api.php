@@ -7,6 +7,7 @@ use App\Http\Controllers\API\UserApiController;
 use App\Http\Controllers\API\RolApiController;
 
 use App\Http\Controllers\CesantiasController;
+use App\Http\Controllers\ReferidosController;
 use App\Http\Controllers\Auth\AuthenticationController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PerfilController;
@@ -68,6 +69,12 @@ Route::post('/cesantias/denyadmin/{id}', [CesantiasController::class, 'DenyAutho
 
 //cesantias aprobadas
 Route::post('cesantias/aprobar/{id}', [CesantiasController::class, 'AcceptCesantia']);
+
+
+
+//Endpoints Referidos
+Route::apiResource('referidos', ReferidosController::class);
+Route::get('referidos/download/{id}', [ReferidosController::class, 'downloadDocumento']);
 
 
 
