@@ -74,7 +74,7 @@ Route::post('cesantias/aprobar/{id}', [CesantiasController::class, 'AcceptCesant
 
 //Endpoints Referidos
 Route::apiResource('referidos', ReferidosController::class);
-Route::get('referidos/download/{id}', [ReferidosController::class, 'downloadDocumento']);
+Route::get('referidos/download/{id}', [ReferidosController::class, 'downloadDocumento'])->middleware('auth:api');
 
 
 

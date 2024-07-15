@@ -17,7 +17,7 @@ class CreateReferidosTable extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->string('tipo_cargo',50);
+            $table->string('estado',50)->nullable();
             $table->string('documento');
             $table->timestamps();
         });

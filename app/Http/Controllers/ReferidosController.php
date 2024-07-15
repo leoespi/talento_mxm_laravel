@@ -26,6 +26,28 @@ class ReferidosController extends Controller
 
     }
 
+
+       
+    public function update(Request $request, $id){
+        $referidos = Referidos::find($id);
+
+        if (!$referidos) {
+            return response()->json(['error' => 'Referido no encontrado'], 404);
+        }
+
+        // Solo actualiza los campos específicos si están presentes en la solicitud
+        if ($request->has('estado')){
+            $referidos->estado = $request->estado;
+        }
+
+        $referidos->save();
+
+        return response()->json($referidos);
+        
+
+    }
+    
+
    
     //Almacenar Referidos
     public function store(Request $request)
@@ -49,7 +71,7 @@ class ReferidosController extends Controller
     
             // Crear el referido en la base de datos
             $referido = Referidos::create([
-                'tipo_cargo' => $request->tipo_cargo,
+             
                 'documento' => $documentoName,
                 'user_id' => $request->user_id
             ]);
@@ -85,9 +107,7 @@ class ReferidosController extends Controller
         }
     }
     
-    
-
-    
+ 
 
 
 
