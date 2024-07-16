@@ -16,10 +16,6 @@ use App\Http\Controllers\ExcelIncapacidadesController;
 use App\Http\Controllers\ExcelCesantiasController;
 
 
-
-
-
-
 Route::put('/updateUser', [UserApiController::class, 'update'])->middleware('auth:api');
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
@@ -34,41 +30,37 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 
+//EndPoints Incapacidades
+
 Route::apiResource('incapacidades', IncapacidadesController::class)->middleware('auth:api');
 Route::get('incapacidades/{uuid}/downloadFromDB', [IncapacidadesController::class, 'downloadFromDB'])->name('incapacidades.downloadFromDB')->middleware('auth:api');
 Route::get('/export-incapacidades', [ExcelIncapacidadesController::class, 'exportIncapacidades'])->name('export-incapacidades')->middleware('auth:api');
 Route::get('incapacidades/download-zip/{uuid}', [IncapacidadesController::class, 'downloadZip'])->middleware('auth:api');
 
 
+
+
 //cesantias
-Route::get('/cesantias/{uuid}/images-size', [CesantiasController::class, 'calculateImagesSizeInMB']);
+Route::get('/cesantias/{uuid}/images-size', [CesantiasController::class, 'calculateImagesSizeInMB']); //calcular peso imagenes
 Route::apiResource('cesantias', CesantiasController::class)->middleware('auth:api')->middleware('auth:api');
-Route::get('cesantias/download-zip/{uuid}', [CesantiasController::class, 'downloadZip'])->middleware('auth:api');
-Route::get('/export-cesantias/{year}', [ExcelCesantiasController::class, 'exportCesantias'])->name('export-cesantias');
+Route::get('cesantias/download-zip/{uuid}', [CesantiasController::class, 'downloadZip'])->middleware('auth:api');//Descargar cesantias en formato zip
+Route::get('/export-cesantias/{year}', [ExcelCesantiasController::class, 'exportCesantias'])->name('export-cesantias');//Exportar cesantias excell
 
 //cesantias autorizadas
-Route::put('/cesantias/{id}/authorize', [CesantiasController::class, 'authorizeCesantia'])->middleware('auth:api');
-Route::get('authorizedCesantia' , [CesantiasController::class,'indexCesantiasAutorizadas' ])->middleware('auth:api');
+Route::put('/cesantias/{id}/authorize', [CesantiasController::class, 'authorizeCesantia'])->middleware('auth:api');//Autorizar cesantias
+Route::get('authorizedCesantia' , [CesantiasController::class,'indexCesantiasAutorizadas' ])->middleware('auth:api');//Ver cesantias autorizadas
 Route::get('authorizedCesantia/download-zip/{uuid}', [CesantiasController::class, 'downloadZipAutorized'])->middleware('auth:api');
 
-
 //cesantias denegadas
-Route::put('/cesantias/{id}/deny', [CesantiasController::class, 'denyCesantia'])->middleware('auth:api');
-
-Route::get('denyCesantia', [CesantiasController::class,'indexCesantiasDenegadas'])->middleware('auth:api');
-
+Route::put('/cesantias/{id}/deny', [CesantiasController::class, 'denyCesantia'])->middleware('auth:api');//denegar cesantias
 
 //Cesantias Denegadas admin 
 Route::post('cesantias/deny/{id}', [CesantiasController::class, 'DenyCesantia'])->middleware('auth:api');
-
-
-
 //Denegar cesantias superadmin
 Route::post('/cesantias/denyadmin/{id}', [CesantiasController::class, 'DenyAuthorizedCesantia'])->middleware('auth:api');
-
-
 //cesantias aprobadas
 Route::post('cesantias/aprobar/{id}', [CesantiasController::class, 'AcceptCesantia'])->middleware('auth:api');
+
 
 
 
