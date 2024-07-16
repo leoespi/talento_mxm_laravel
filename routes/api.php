@@ -59,21 +59,21 @@ Route::get('denyCesantia', [CesantiasController::class,'indexCesantiasDenegadas'
 
 
 //Cesantias Denegadas admin 
-Route::post('cesantias/deny/{id}', [CesantiasController::class, 'DenyCesantia']);
+Route::post('cesantias/deny/{id}', [CesantiasController::class, 'DenyCesantia'])->middleware('auth:api');
 
 
 
 //Denegar cesantias superadmin
-Route::post('/cesantias/denyadmin/{id}', [CesantiasController::class, 'DenyAuthorizedCesantia']);
+Route::post('/cesantias/denyadmin/{id}', [CesantiasController::class, 'DenyAuthorizedCesantia'])->middleware('auth:api');
 
 
 //cesantias aprobadas
-Route::post('cesantias/aprobar/{id}', [CesantiasController::class, 'AcceptCesantia']);
+Route::post('cesantias/aprobar/{id}', [CesantiasController::class, 'AcceptCesantia'])->middleware('auth:api');
 
 
 
 //Endpoints Referidos
-Route::apiResource('referidos', ReferidosController::class);
+Route::apiResource('referidos', ReferidosController::class)->middleware('auth:api');
 Route::get('referidos/download/{id}', [ReferidosController::class, 'downloadDocumento'])->middleware('auth:api');
 
 
