@@ -294,11 +294,13 @@ class CesantiasController extends Controller
         ));
 
         // Retornar la vista de correo electrónico para mostrar la confirmación al usuario
-        return view('emails.cesantia_denegada', [
+        return response()->json([
+            'message' => 'Cesantía denegada exitosamente',
             'justificacion' => $request->justificacion,
             'tipo_cesantia_reportada' => $authorizedCesantia->tipo_cesantia_reportada,
             'nombre_usuario' => $authorizedCesantia->user->name,
         ]);
+        
 
     } catch (\Exception $e) {
         // Capturar cualquier excepción y registrarla en el log
@@ -473,12 +475,8 @@ class CesantiasController extends Controller
             $cesantia->user->name // Nombre del usuario
         ));
 
-        // Retornar la vista de correo electrónico para mostrar la confirmación al usuario
-        return view('emails.cesantia_denegada', [
-            'justificacion' => $request->justificacion,
-            'tipo_cesantia_reportada' => $cesantia->tipo_cesantia_reportada,
-            'nombre_usuario' => $cesantia->user->name,
-        ]);
+        // Retornar una respuesta JSON de éxito
+        return response()->json(['message' => 'Cesantía denegada exitosamente']);
 
     } catch (\Exception $e) {
         // Capturar cualquier excepción y registrarla en el log
