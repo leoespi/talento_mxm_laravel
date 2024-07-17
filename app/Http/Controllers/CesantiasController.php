@@ -364,12 +364,15 @@ class CesantiasController extends Controller
             $authorizedCesantia->user->name // Nombre del usuario
         ));
 
-        // Retornar la vista de correo electrónico para mostrar la confirmación al usuario
-        return view('emails.cesantia_aprobada', [
+         // Retornar la vista de correo electrónico para mostrar la confirmación al usuario
+         return response()->json([
+            'message' => 'Cesantía denegada exitosamente',
             'justificacion' => $request->justificacion,
             'tipo_cesantia_reportada' => $authorizedCesantia->tipo_cesantia_reportada,
             'nombre_usuario' => $authorizedCesantia->user->name,
         ]);
+        
+        
     } catch (\Exception $e) {
         // Capturar cualquier excepción y registrarla en el log
         Log::error('Error al aprobar la cesantía: ' . $e->getMessage());

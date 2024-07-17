@@ -18,7 +18,6 @@
                 $table->string('justificacion',500)->nullable();
                 $table->uuid('uuid');
                 $table->json('images')->nullable();
-
                 $table->timestamps();
             });
         }
