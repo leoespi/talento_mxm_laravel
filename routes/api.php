@@ -14,6 +14,7 @@ use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\ExcelIncapacidadesController;
 use App\Http\Controllers\ExcelCesantiasController;
+use App\Http\Controllers\PublicacionController;
 
 
 Route::put('/updateUser', [UserApiController::class, 'update'])->middleware('auth:api');
@@ -68,7 +69,9 @@ Route::post('cesantias/aprobar/{id}', [CesantiasController::class, 'AcceptCesant
 Route::apiResource('referidos', ReferidosController::class)->middleware('auth:api');
 Route::get('referidos/download/{id}', [ReferidosController::class, 'downloadDocumento'])->middleware('auth:api');
 
-
+//Endpoints Publicacion
+Route::resource('publicacion', PublicacionController::class);
+Route::put('/publicacion/{id}', [PublicacionController::class, 'update']);
 
 
 

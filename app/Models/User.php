@@ -58,4 +58,9 @@ class User extends Authenticatable
         return $this->hasMany(Incapacidades::class);
     }
 
+    public function Publicacion(): HasMany
+    {
+        return $this->hasMany(Publicacion::class);
+    }
+
 }
