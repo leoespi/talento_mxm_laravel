@@ -419,6 +419,12 @@ class CesantiasController extends Controller
             return response()->json(['error' => 'La cesantía ya ha sido denegada previamente'], 422);
         }
 
+
+        // Verificar si la cesantía está denegada en la tabla Cesantias
+        if ($cesantia->estado === 'Aprobada') {
+            return response()->json(['error' => 'La cesantía está aprobada. No puede ser denegada'], 422);
+        }
+
         // Validar que la justificación esté presente
         $validator = Validator::make($request->all(), [
             'justificacion' => 'required|string'
