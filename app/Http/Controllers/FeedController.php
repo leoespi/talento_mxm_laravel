@@ -3,25 +3,41 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
+
 use App\Models\Feed;
 use App\Models\FeedImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator; 
+
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 
 class FeedController extends Controller
 {
     public function index()
-    {
-        $feeds = Feed::with('user', 'images')->get();
-        return response(['feeds' => $feeds], 200, [], JSON_NUMERIC_CHECK);
-    }
+{
+    $feeds = Feed::with('user', 'images')->get();
+    // Modificar la ruta de las imágenes para incluir '/storage/'
+    $feeds->each(function ($feed) {
+        $feed->images->each(function ($image) {
+            $image->image_path = '/storage/' . $image->image_path;
+        });
+    });
+    return response(['feeds' => $feeds], 200, [], JSON_NUMERIC_CHECK);
+}
+
 
     public function store(Request $request)
     {
         try {
-            $request->validate([ 
-                'content' => 'required',
-                'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Validación para imágenes
-            ]); 
+            $request->validate([
+                'user_id' => 'required|integer',
+                'content' => 'required|string',
+                'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+            
+                   
     
             $feed = Feed::create([
                 'content' => $request->content,
@@ -30,17 +46,20 @@ class FeedController extends Controller
     
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
-                    $path = $image->store('feed_images'); // Almacenar la imagen en storage/app/feed_images
+                    $path = $image->store('feed_images', 'public'); // Almacena en public/feed_images
                     $feed->images()->create(['image_path' => $path]);
                 }
             }
+            
+            
+            
     
             return response(['message' => 'success'], 201);
         } catch (\Exception $e) {
             return response(['message' => 'error', 'error' => $e->getMessage()], 500);
         }
     }
-
+    
     public function destroy($id)
     {
         $feed = Feed::find($id);
