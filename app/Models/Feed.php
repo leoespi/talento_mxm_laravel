@@ -13,6 +13,7 @@ class Feed extends Model
     protected $fillable = [
         'user_id',
         'content',
+        'video_link', // Añadido aquí
     ];
 
     public function user(): BelongsTo

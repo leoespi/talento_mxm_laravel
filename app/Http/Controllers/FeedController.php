@@ -27,38 +27,37 @@ class FeedController extends Controller
     return response(['feeds' => $feeds], 200, [], JSON_NUMERIC_CHECK);
 }
 
+public function store(Request $request)
+{
+    try {
+        $request->validate([
+            'user_id' => 'required|integer',
+            'content' => 'required|string',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Imágenes opcionales
+            'video_link' => 'nullable|url', // Enlace de video opcional
+        ]);
 
-    public function store(Request $request)
-    {
-        try {
-            $request->validate([
-                'user_id' => 'required|integer',
-                'content' => 'required|string',
-                'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            ]);
-            
-                   
-    
-            $feed = Feed::create([
-                'content' => $request->content,
-                'user_id' => $request->user_id,
-            ]);
-    
-            if ($request->hasFile('images')) {
-                foreach ($request->file('images') as $image) {
-                    $path = $image->store('feed_images', 'public'); // Almacena en public/feed_images
-                    $feed->images()->create(['image_path' => $path]);
-                }
+        $feed = Feed::create([
+            'content' => $request->content,
+            'user_id' => $request->user_id,
+            'video_link' => $request->video_link, // Agregar enlace del video si existe
+        ]);
+
+        // Procesar las imágenes si se han subido
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('feed_images', 'public'); // Almacena en public/feed_images
+                $feed->images()->create(['image_path' => $path]);
             }
-            
-            
-            
-    
-            return response(['message' => 'success'], 201);
-        } catch (\Exception $e) {
-            return response(['message' => 'error', 'error' => $e->getMessage()], 500);
         }
+
+        return response(['message' => 'success'], 201);
+    } catch (\Exception $e) {
+        return response(['message' => 'error', 'error' => $e->getMessage()], 500);
     }
+}
+
+
     
     public function destroy($id)
     {
