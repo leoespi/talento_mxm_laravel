@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cesantía Denegada</title>
+    <title>Asunto: Solicitud de Cesantías Denegada</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -35,14 +35,16 @@
 </head>
 <body>
     <div class="container">
-        <h1>Cesantía Denegada</h1>
-        <p>Hola <strong>{{ $nombre_usuario }}</strong>,</p>
-        <p>Lamentamos informarte que tu solicitud de cesantía ha sido denegada. A continuación encontrarás detalles adicionales:</p>
-        <p><strong>Tipo de cesantía reportada:</strong> {{ $tipo_cesantia_reportada }}</p>
-        <p><strong>Justificación:</strong> {{ $justificacion }}</p>
+        <h1>Asunto: Solicitud de Cesantías Denegada</h1>
+        <p>Estimado(a) <strong>{{ $nombre_usuario }}</strong>,</p>
+        <p>Lamentamos informarle que su solicitud de cesantías ha sido denegada debido a inconsistencias en los soportes entregados. Para continuar con el proceso, por favor revise los siguientes puntos y presente los documentos correctos:</p>
+        <p><strong>[observaciones]:</strong> {{ $justificacion }}</p>
         
-        <p>Esta dirección de e-mail es utilizada solamente para envíos automáticos de información. Por favor no responda este correo con consultas ya que no podrán ser atendidas.</p>
-        <p>Gracias.</p>
+        <p>Puede reenviar los documentos a través de nuestra plataforma o contactarnos directamente para obtener más detalles y asistencia.</p>
+        <p>Agradecemos su comprensión y colaboración. Si tiene alguna pregunta, no dude en comunicarse con nosotros a través de  nomina@mxm.com.co o el cel. (+57) 317 4343975.</p>
+        <p>Atentamente</p>
+        <p>Talento Humano</p>
+        <p>Supermercados Mas por Menos S.A.S.</p>
         <div class="footer">
             <p>Este es un mensaje automático, por favor no responder.</p>
         </div>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cesantía Aprobada</title>
+    <title>Asunto: Solicitud de Cesantías Aprobada</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -35,12 +35,14 @@
 </head>
 <body>
     <div class="container">
-        <h1>Cesantía Aprobada</h1>
-        <p>Estimado <strong> {{ $nombre_usuario }} </strong> ,</p>
-        <p>La cesantía de tipo <strong>{{ $tipo_cesantia_reportada }}</strong> ha sido aprobada.</p>
+        <h1>Asunto: Solicitud de Cesantías Aprobada</h1>
+        <p>Estimado(a) <strong> {{ $nombre_usuario }} </strong> ,</p>
+        <p>Nos complace informarle que su solicitud de cesantías ha sido aprobada. El proceso de desembolso ha comenzado a gestionarse con la entidad en la que se encuentra afiliado.</p>
         <p>Justificación: {{ $justificacion }}</p>
-        <p>Gracias,</p>
-        <p>Equipo de Talento Humano</p>
+        <p>Agradecemos su paciencia y confianza en nuestro servicio. Si tiene alguna pregunta o necesita más información, no dude en ponerse en contacto con nosotros a través de nomina@mxm.com.co o el cel. (+57) 317 4343975.</p>
+        <p>Atentamente</p>
+        <p>Talento Humano</p>
+        <p>Supermercados Mas por Menos S.A.S.</p>
         <div class="footer">
             <p>Este es un mensaje automático, por favor no responder.</p>
         </div>

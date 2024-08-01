@@ -18,12 +18,15 @@ class FeedController extends Controller
     public function index()
 {
     $feeds = Feed::with('user', 'images')->get();
+    
     // Modificar la ruta de las imágenes para incluir '/storage/'
     $feeds->each(function ($feed) {
         $feed->images->each(function ($image) {
             $image->image_path = '/storage/' . $image->image_path;
         });
     });
+    
+    // Incluye 'video_link' en la respuesta
     return response(['feeds' => $feeds], 200, [], JSON_NUMERIC_CHECK);
 }
 
