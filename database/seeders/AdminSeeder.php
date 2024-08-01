@@ -23,6 +23,7 @@ class AdminSeeder extends Seeder{
             'email' => "betsy.taboada@mxm.com.co",
             'password' => Hash::make('123456'),
             'rol_id' => 4,
+            'is_active' => true,
 
         ]);
         
@@ -33,6 +34,7 @@ class AdminSeeder extends Seeder{
             'email' => "eleo@gmail.com",
             'password' => Hash::make('123456'),
             'rol_id' => 1,
+            'is_active' => true,
 
         ]);
 
@@ -42,6 +44,7 @@ class AdminSeeder extends Seeder{
             'email' => "david@gmail.com",
             'password' => Hash::make('davidmxm123'),
             'rol_id' => 1,
+            'is_active' => true,
 
         ]);
 
@@ -51,6 +54,7 @@ class AdminSeeder extends Seeder{
             'email' => "comunicacion@gmail.com",
             'password' => Hash::make('123456'),
             'rol_id' => 3,
+            'is_active' => true,
 
         ]);
         

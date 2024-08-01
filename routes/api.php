@@ -25,9 +25,16 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::apiResource('user', UserApiController::class)->middleware('auth:api');
 Route::apiResource('rol', RolApiController::class);
 Route::get('/users', [UserApiController::class, 'index'])->middleware('auth:api');
+
+Route::post('/users/{id}/activate', [UserApiController::class, 'activate']);
+Route::post('/users/{id}/deactivate', [UserApiController::class, 'deactivate']);
+
 Route::get('/export-users', [ExcelController::class, 'exportUsers'])->name('export-users')->middleware('auth:api');
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
+
+
+
 });
 
 

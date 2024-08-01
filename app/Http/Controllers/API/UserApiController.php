@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Mail\UserDeactivated;
+use App\Mail\UserActivated;
+
 
 class UserApiController extends Controller
 {
@@ -62,4 +65,38 @@ class UserApiController extends Controller
         $user->delete();
         return response()->json($user);
     }
+
+
+    public function activate($id)
+{
+    $user = User::find($id);
+    if (!$user) {
+        return response()->json(['message' => 'User not found'], 404);
+    }
+
+    $user->is_active = true;
+    $user->save();
+
+    // Enviar correo al usuario
+    \Mail::to($user->email)->send(new \App\Mail\UserActivated($user));
+
+    return response()->json(['message' => 'User activated successfully']);
+}
+
+public function deactivate($id)
+{
+    $user = User::find($id);
+    if (!$user) {
+        return response()->json(['message' => 'User not found'], 404);
+    }
+
+    $user->is_active = false;
+    $user->save();
+
+    // Enviar correo al usuario
+    \Mail::to($user->email)->send(new \App\Mail\UserDeactivated($user));
+
+    return response()->json(['message' => 'User deactivated successfully']);
+}
+
 }

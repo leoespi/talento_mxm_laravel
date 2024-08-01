@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('password');
             $table->foreignId('rol_id');
             $table->foreign('rol_id')->references('id')->on('rols');
+            $table->boolean('is_active')->default(false);
             $table->rememberToken();
             $table->timestamps();   
         });

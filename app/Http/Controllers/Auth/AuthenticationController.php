@@ -21,6 +21,7 @@ class AuthenticationController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'rol_id' => 2,
+            'is_active' => false,
         ];
 
         $user = User::create($userData);
@@ -36,26 +37,30 @@ class AuthenticationController extends Controller
     }
 
     public function login(LoginRequest $request)
-{
-    $request->validated();
+    {
+        $request->validated();
 
-    $user = User::wherecedula($request->cedula)->first();
-    if (!$user || !Hash::check($request->password, $user->password)) {
+        // Buscar al usuario por cédula
+        $user = User::where('cedula', $request->cedula)->first();
+
+        // Verificar si el usuario existe, está activo y si la contraseña es correcta
+        if (!$user || !$user->is_active || !Hash::check($request->password, $user->password)) {
+            return response([
+                'message' => 'Unauthorized or inactive user'
+            ], 401);
+        }
+
+        // Crear el token de acceso y obtener el token de texto plano
+        $token = $user->createToken('talento_mxm_laravel');
+
+        // Acceder al token de texto plano
+        $accessToken = $token->accessToken;
+
         return response([
-            'message' => 'Invalid credentials'
-        ], 422);
+            'user' => $user,
+            'token' => $accessToken
+        ], 200);
     }
 
-    // Crear el token de acceso y obtener el token de texto plano
-    $token = $user->createToken('talento_mxm_laravel');
-
-    // Acceder al token de texto plano
-    $accessToken = $token->accessToken;
-
-
-    return response([
-        'user' => $user,
-        'token' => $accessToken
-    ], 200);
-}
+    
 }
