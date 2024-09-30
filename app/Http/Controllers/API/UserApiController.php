@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\UserDeactivated;
@@ -65,6 +66,55 @@ class UserApiController extends Controller
         $user->delete();
         return response()->json($user);
     }
+
+
+    public function sendResetPin(Request $request)
+{
+    $request->validate(['email' => 'required|email']);
+
+    // Buscar el usuario por correo electrónico
+    $user = User::where('email', $request->email)->first();
+
+    if (!$user) {
+        return response()->json(['message' => 'Usuario no encontrado'], 404);
+    }
+
+    // Generar un PIN aleatorio
+    $pin = rand(100000, 999999);
+
+    // Guardar el PIN en el usuario (puedes crear un campo en la tabla de usuarios)
+    $user->reset_pin = bcrypt($pin); // O almacenarlo en otra parte segura
+    $user->save();
+
+    // Enviar el PIN por correo
+    \Mail::to($user->email)->send(new \App\Mail\ResetPinMail($pin));
+
+    return response()->json(['message' => 'PIN enviado a tu correo']);
+}
+
+
+public function resetPasswordWithPin(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'pin' => 'required',
+        'new_password' => 'required|min:8',
+    ]);
+
+    $user = User::where('email', $request->email)->first();
+
+    if (!$user || !Hash::check($request->pin, $user->reset_pin)) {
+        return response()->json(['message' => 'PIN incorrecto o usuario no encontrado'], 401);
+    }
+
+    // Actualizar la contraseña
+    $user->password = Hash::make($request->new_password);
+    $user->reset_pin = null; // Limpiar el PIN después de usarlo
+    $user->save();
+
+    return response()->json(['message' => 'Contraseña actualizada con éxito']);
+}
+
 
 
     public function activate($id)

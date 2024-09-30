@@ -31,7 +31,7 @@ class AdminSeeder extends Seeder{
         $user = User::create([
             'name' => "leonardo",
             'cedula' => "1097092599",  // Agrega cedula 
-            'email' => "eleo@gmail.com",
+            'email' => "riveraleo113@gmail.com",
             'password' => Hash::make('123456'),
             'rol_id' => 1,
             'is_active' => true,

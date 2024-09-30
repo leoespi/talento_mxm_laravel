@@ -46,7 +46,7 @@ class AuthenticationController extends Controller
         // Verificar si el usuario existe, está activo y si la contraseña es correcta
         if (!$user || !$user->is_active || !Hash::check($request->password, $user->password)) {
             return response([
-                'message' => 'Unauthorized or inactive user'
+                'message' => 'Usuario no autorizado o  Inactivo'
             ], 401);
         }
 
@@ -62,5 +62,5 @@ class AuthenticationController extends Controller
         ], 200);
     }
 
-    
+
 }

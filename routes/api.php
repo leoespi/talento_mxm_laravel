@@ -38,6 +38,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 
+Route::post('password/forgot', [UserApiController::class, 'sendResetPin']);
+Route::post('password/reset', [UserApiController::class, 'resetPasswordWithPin']);
+
+
 //EndPoints Incapacidades
 
 Route::apiResource('incapacidades', IncapacidadesController::class)->middleware('auth:api');
