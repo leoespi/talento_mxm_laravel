@@ -2,10 +2,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>User Deactivated</title>
+    <title>Usuario Desactivado</title>
 </head>
 <body>
-    <h1>Hello {{ $name }}</h1>
-    <p>Your account has been deactivated. Please contact support for more details.</p>
+    <h1>Hola {{ $name }}</h1>
+    <p>Su cuenta ha sido desactivada. Comuníquese con el soporte para obtener más detalles.</p>
 </body>
 </html>
