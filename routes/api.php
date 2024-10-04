@@ -26,8 +26,8 @@ Route::apiResource('user', UserApiController::class)->middleware('auth:api');
 Route::apiResource('rol', RolApiController::class);
 Route::get('/users', [UserApiController::class, 'index'])->middleware('auth:api');
 
-Route::post('/users/{id}/activate', [UserApiController::class, 'activate']);
-Route::post('/users/{id}/deactivate', [UserApiController::class, 'deactivate']);
+Route::post('/users/{id}/activate', [UserApiController::class, 'activate'])->middleware('auth:api');
+Route::post('/users/{id}/deactivate', [UserApiController::class, 'deactivate'])->middleware('auth:api');
 
 Route::get('/export-users', [ExcelController::class, 'exportUsers'])->name('export-users')->middleware('auth:api');
 Route::middleware('auth:api')->get('/user', function (Request $request) {
@@ -48,6 +48,7 @@ Route::apiResource('incapacidades', IncapacidadesController::class)->middleware(
 Route::get('incapacidades/{uuid}/downloadFromDB', [IncapacidadesController::class, 'downloadFromDB'])->name('incapacidades.downloadFromDB')->middleware('auth:api');
 Route::get('/export-incapacidades', [ExcelIncapacidadesController::class, 'exportIncapacidades'])->name('export-incapacidades')->middleware('auth:api');
 Route::get('incapacidades/download-zip/{uuid}', [IncapacidadesController::class, 'downloadZip'])->middleware('auth:api');
+
 
 
 
@@ -74,16 +75,13 @@ Route::post('/cesantias/denyadmin/{id}', [CesantiasController::class, 'DenyAutho
 Route::post('cesantias/aprobar/{id}', [CesantiasController::class, 'AcceptCesantia'])->middleware('auth:api');
 
 
-
-
 //Endpoints Referidos
 Route::apiResource('referidos', ReferidosController::class)->middleware('auth:api');
 Route::get('referidos/download/{id}', [ReferidosController::class, 'downloadDocumento'])->middleware('auth:api');
 
 //Endpoints Feed
-Route::apiResource('feeds', FeedController::class);
-Route::post('feeds', [FeedController::class, 'store']);
-
+Route::apiResource('feeds', FeedController::class);                                                                                                  ;
+Route::post('feeds', [FeedController::class, 'store'])->middleware('auth:api');
 
 
 

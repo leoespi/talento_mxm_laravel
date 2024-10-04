@@ -24,6 +24,7 @@ class UserApiController extends Controller
         return response()->json($user, 200);
     }
 
+    
     public function indexUser()
     {
         $user = Auth::user();

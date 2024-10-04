@@ -3,18 +3,21 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Models\Feed;
 use App\Models\FeedImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator; 
+use App\Models\User;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 
 class FeedController extends Controller
 {
+
     public function index()
 {
     $feeds = Feed::with('user', 'images')->get();
