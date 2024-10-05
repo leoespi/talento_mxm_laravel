@@ -41,13 +41,14 @@ class AuthenticationController extends Controller
     public function registerAdmin(RegisterRequest $request)
     {
         $request->validated();
+        $rol_id = $request->rol_id;
 
         $userData = [
             'name' => $request->name,
             'cedula' => $request->cedula,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'rol_id' => 1,
+            'rol_id' => $rol_id,
             'is_active' => false,
         ];
 
