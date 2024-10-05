@@ -94,6 +94,9 @@ Route::get('/test', function () {
 
 Route::post('register', [AuthenticationController::class, 'register']);
 
+Route::post('registeradmin', [AuthenticationController::class, 'registerAdmin']);
+
+
 Route::post('login', [AuthenticationController::class, 'login']);
 
 Route::get('/get/user', [UserApiController::class, 'indexUser'])->middleware('auth:api');

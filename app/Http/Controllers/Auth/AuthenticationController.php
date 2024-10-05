@@ -36,6 +36,33 @@ class AuthenticationController extends Controller
         ], 201);
     }
 
+
+
+    public function registerAdmin(RegisterRequest $request)
+    {
+        $request->validated();
+
+        $userData = [
+            'name' => $request->name,
+            'cedula' => $request->cedula,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'rol_id' => 1,
+            'is_active' => false,
+        ];
+
+        $user = User::create($userData);
+        $token = $user->createToken('talento_mxm_laravel');
+
+    // Acceder al token de texto plano
+    $accessToken = $token->accessToken;
+
+        return response([
+            'user' => $user,
+            'token' => $accessToken
+        ], 201);
+    }
+
     public function login(LoginRequest $request)
     {
         $request->validated();
