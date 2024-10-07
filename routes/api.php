@@ -80,9 +80,10 @@ Route::apiResource('referidos', ReferidosController::class)->middleware('auth:ap
 Route::get('referidos/download/{id}', [ReferidosController::class, 'downloadDocumento'])->middleware('auth:api');
 
 //Endpoints Feed
-Route::apiResource('feeds', FeedController::class);                                                                                                  ;
+//Route::apiResource('feeds', FeedController::class);                                                                                                  ;
 Route::post('feeds', [FeedController::class, 'store'])->middleware('auth:api');
-
+Route::delete('feeds', [FeedController::class, 'destroy'])->middleware('auth:api');
+Route::get('feeds', [FeedController::class, 'index'])->middleware('auth:api');
 
 
 Route::get('/test', function () {
