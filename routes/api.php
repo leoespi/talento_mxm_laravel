@@ -15,6 +15,7 @@ use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\ExcelIncapacidadesController;
 use App\Http\Controllers\ExcelCesantiasController;
 use App\Http\Controllers\FeedController;
+use App\Http\Controllers\HorariosController;
 
 
 // Rutas sin middleware
@@ -75,4 +76,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/get/user', [UserApiController::class, 'indexUser']);
     Route::get('logout', [AuthController::class, "logout"]);
     Route::get("/perfil/ver", [PerfilController::class, 'verPerfil']);
+
+    Route::post("/horarios-import", [HorariosController::class, 'store']);
+    Route::get('/horarios', [HorariosController::class, 'index']);
+
 });
