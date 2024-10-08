@@ -8,16 +8,12 @@ use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Carbon\Carbon;
 
 class AuthenticationController extends Controller
 {
     public function register(RegisterRequest $request)
     {
         $request->validated();
-
-         // Obtener la fecha y hora actual
-         $now = Carbon::now();
 
         $userData = [
             'name' => $request->name,
@@ -30,14 +26,13 @@ class AuthenticationController extends Controller
 
         $user = User::create($userData);
         $token = $user->createToken('talento_mxm_laravel');
-        $accessToken = $token->accessToken;
-        $token->expires_at = Carbon::now()->addHours(10);
-        $token->save();
+
+    // Acceder al token de texto plano
+    $accessToken = $token->accessToken;
 
         return response([
             'user' => $user,
-            'token' => $accessToken,
-            'expires_at' => Carbon::parse($token->expires_at)->toDateTimeString(),
+            'token' => $accessToken
         ], 201);
     }
 
@@ -73,6 +68,8 @@ class AuthenticationController extends Controller
     {
         $request->validated();
 
+     
+
         // Buscar al usuario por cédula
         $user = User::where('cedula', $request->cedula)->first();
 
@@ -85,6 +82,7 @@ class AuthenticationController extends Controller
 
         // Crear el token de acceso y obtener el token de texto plano
         $token = $user->createToken('talento_mxm_laravel');
+        
 
         // Acceder al token de texto plano
         $accessToken = $token->accessToken;

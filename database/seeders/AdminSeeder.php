@@ -18,7 +18,7 @@ class AdminSeeder extends Seeder{
      {
 
         $user = User::create([
-            'name' => "Betsy Katherine Taboada Caro",
+            'name' => "SuperAdmin",
             'cedula' => "1097092580", 
             'email' => "betsy.taboada@mxm.com.co",
             'password' => Hash::make('123456'),
@@ -29,9 +29,9 @@ class AdminSeeder extends Seeder{
         
 
         $user = User::create([
-            'name' => "leonardo Espinosa Rivera",
+            'name' => "Administrador1",
             'cedula' => "1097092599",  // Agrega cedula 
-            'email' => "riveraleo113@gmail.com",
+            'email' => "talentohumanomxm1@gmail.com",
             'password' => Hash::make('123456'),
             'rol_id' => 1,
             'is_active' => true,
@@ -39,16 +39,24 @@ class AdminSeeder extends Seeder{
         ]);
 
         $user = User::create([
-            'name' => "david",
-            'cedula' => "27951193", 
-            'email' => "david@gmail.com",
-            'password' => Hash::make('davidmxm123'),
+            'name' => "Administrador2",
+            'cedula' => "27951191", 
+            'email' => "talentohumanomxm2@gmail.com",
+            'password' => Hash::make('123456'),
             'rol_id' => 1,
             'is_active' => true,
 
         ]);
 
-      
+        $user = User::create([
+            'name' => "Administrador3",
+            'cedula' => "27951193", 
+            'email' => "talentohumanomxm3@gmail.com",
+            'password' => Hash::make('123456'),
+            'rol_id' => 1,
+            'is_active' => true,
+
+        ]);
 
         $user = User::create([
             'name' => "Comunicacion.MXM",
@@ -60,139 +68,6 @@ class AdminSeeder extends Seeder{
 
         ]);
         
-        $user = User::create([
-            'name' => "AdministradorMXM",
-            'cedula' => "27951191", 
-            'email' => "talentohumanomxm@gmail.com",
-            'password' => Hash::make('123456'),
-            'rol_id' => 1,
-            'is_active' => true,
-
-        ]);
-
-
-
-        /*** EJEMPLO SEEDER PARA LAS PAGINACIONES DEL ANGULAR */
-
-        $user = User::create([
-            'name' => "pedro",
-            'cedula' => "1097092500",  // Agrega cedula 
-            'email' => "riveraledad@gmail.com",
-            'password' => Hash::make('123456'),
-            'rol_id' => 2,
-            'is_active' => true,
-
-        ]);
-        
-        $user = User::create([
-            'name' => "camilo",
-            'cedula' => "1097092501",  // Agrega cedula 
-            'email' => "riveraledadfskfd@gmail.com",
-            'password' => Hash::make('123456'),
-            'rol_id' => 2,
-            'is_active' => true,
-
-        ]);
-
-        $user = User::create([
-            'name' => "perrrr",
-            'cedula' => "1097092502",  // Agrega cedula 
-            'email' => "riveraleqqdad@gmail.com",
-            'password' => Hash::make('123456'),
-            'rol_id' => 2,
-            'is_active' => true,
-
-        ]);
-
-        $user = User::create([
-            'name' => "QQQ",
-            'cedula' => "1097092503",  // Agrega cedula 
-            'email' => "riveraledSDad@gmail.com",
-            'password' => Hash::make('123456'),
-            'rol_id' => 2,
-            'is_active' => true,
-
-        ]);
-
-        $user = User::create([
-            'name' => "rope",
-            'cedula' => "1097092504",  // Agrega cedula 
-            'email' => "riverqealedad@gmail.com",
-            'password' => Hash::make('123456'),
-            'rol_id' => 2,
-            'is_active' => true,
-
-        ]);
-
-        $user = User::create([
-            'name' => "rett",
-            'cedula' => "1097092505",  // Agrega cedula 
-            'email' => "rivedsraledad@gmail.com",
-            'password' => Hash::make('123456'),
-            'rol_id' => 2,
-            'is_active' => true,
-
-        ]);
-
-        $user = User::create([
-            'name' => "pepe",
-            'cedula' => "1097092506",  // Agrega cedula 
-            'email' => "riveraledalalad@gmail.com",
-            'password' => Hash::make('123456'),
-            'rol_id' => 2,
-            'is_active' => true,
-
-        ]);
-
-        $user = User::create([
-            'name' => "pedddro",
-            'cedula' => "1097092533",  // Agrega cedula 
-            'email' => "riveraledads@gmail.com",
-            'password' => Hash::make('123456'),
-            'rol_id' => 2,
-            'is_active' => true,
-
-        ]);
-        $user = User::create([
-            'name' => "pedssro",
-            'cedula' => "1097092522",  // Agrega cedula 
-            'email' => "rivad@gmail.com",
-            'password' => Hash::make('123456'),
-            'rol_id' => 2,
-            'is_active' => true,
-
-        ]);
-        $user = User::create([
-            'name' => "pedroe",
-            'cedula' => "1097092530",  // Agrega cedula 
-            'email' => "riverald@gmail.com",
-            'password' => Hash::make('123456'),
-            'rol_id' => 2,
-            'is_active' => true,
-
-        ]);
-
-        $user = User::create([
-            'name' => "lelleelf",
-            'cedula' => "1092092500",  // Agrega cedula 
-            'email' => "rivealedad@gmail.com",
-            'password' => Hash::make('123456'),
-            'rol_id' => 2,
-            'is_active' => true,
-
-        ]);
-
-        $user = User::create([
-            'name' => "qqqq",
-            'cedula' => "1097092592",  // Agrega cedula 
-            'email' => "river22aledad@gmail.com",
-            'password' => Hash::make('123456'),
-            'rol_id' => 2,
-            'is_active' => true,
-
-        ]);
-
-
-        
+       
      }
 }

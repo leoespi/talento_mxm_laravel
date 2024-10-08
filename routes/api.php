@@ -62,7 +62,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('cesantias/{uuid}/images-size', [CesantiasController::class, 'calculateImagesSizeInMB']);
 
-    
+
     // EndPoints Referidos
     Route::apiResource('referidos', ReferidosController::class);
     Route::get('referidos/download/{id}', [ReferidosController::class, 'downloadDocumento']);
