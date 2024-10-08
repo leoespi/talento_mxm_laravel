@@ -18,6 +18,14 @@ class CreateHorariosTable extends Migration
             $table->string('viernes')->nullable();
             $table->string('sabado')->nullable();
             $table->string('domingo')->nullable();
+
+            $table->string('lunes2')->nullable();
+            $table->string('martes2')->nullable();
+            $table->string('miercoles2')->nullable();
+            $table->string('jueves2')->nullable();
+            $table->string('viernes2')->nullable();
+            $table->string('sabado2')->nullable();
+            $table->string('domingo2')->nullable();
             $table->date('fecha_inicio')->nullable();
             $table->date('fecha_fin')->nullable();
             $table->timestamps();
