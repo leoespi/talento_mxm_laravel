@@ -73,7 +73,7 @@ class CesantiasController extends Controller
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
                     $imageName = $image->getClientOriginalName();
-                    $image->storeAs('cesantias_folder/' . $cesantias->id, $imageName);
+                    $image->storeAs('cesantias_folder/' . $cesantias->id, $imageName,  'public');
                     $images[] = $imageName;
                 }
                 $cesantias->update(['images' => json_encode($images)]);
@@ -93,7 +93,7 @@ class CesantiasController extends Controller
     {  
         try {
             $cesantias = Cesantias::where('uuid', $uuid)->firstOrFail();
-            $imagePath = storage_path("app/cesantias_folder/{$cesantias->id}/{$cesantias->image}");
+            $imagePath = storage_path("app/public/cesantias_folder/{$cesantias->id}/{$cesantias->image}");
 
             if (!file_exists($imagePath)) {
                 abort(404, 'La imagen no se encontró');
@@ -120,11 +120,11 @@ class CesantiasController extends Controller
             }
 
             $zip = new \ZipArchive();
-            $zipFileName = storage_path("app/cesantias_folder/{$cesantias->id}/cesantias_{$uuid}.zip");
+            $zipFileName = storage_path("app/public/cesantias_folder/{$cesantias->id}/cesantias_{$uuid}.zip");
 
             if ($zip->open($zipFileName, \ZipArchive::CREATE) === TRUE) {
                 foreach ($images as $image) {
-                    $filePath = storage_path("app/cesantias_folder/{$cesantias->id}/$image");
+                    $filePath = storage_path("app/public/cesantias_folder/{$cesantias->id}/$image");
                     if (file_exists($filePath)) {
                         $zip->addFile($filePath, $image);
                     } else {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         

@@ -64,7 +64,7 @@ class IncapacidadesController extends Controller
             if($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
                     $imageName = $image->getClientOriginalName();
-                    $image->storeAs('incapacidad_folder/' . $incapacidad->id, $imageName);
+                    $image->storeAs('incapacidad_folder/' . $incapacidad->id, $imageName,  'public');
                     $images[] = $imageName;
                 }
                 $incapacidad->update(['images' => json_encode($images)]);
@@ -85,7 +85,7 @@ class IncapacidadesController extends Controller
         $incapacidad = Incapacidades::where('uuid', $uuid)->firstOrFail();
         
         // Obtener la ruta completa de la imagen
-        $imagePath = storage_path("app/incapacidad_folder/{$incapacidad->id}/{$incapacidad->image}");
+        $imagePath = storage_path("app/public/incapacidad_folder/{$incapacidad->id}/{$incapacidad->image}");
         
         // Verificar si la imagen existe
         if (!file_exists($imagePath)) {
@@ -138,11 +138,11 @@ public function downloadZip($uuid)
         }
 
         $zip = new \ZipArchive();
-        $zipFileName = storage_path("app/incapacidad_folder/{$incapacidad->id}/incapacidad_{$uuid}.zip");
+        $zipFileName = storage_path("app/public/incapacidad_folder/{$incapacidad->id}/incapacidad_{$uuid}.zip");
 
         if ($zip->open($zipFileName, \ZipArchive::CREATE) === TRUE) {
             foreach ($images as $image) {
-                $filePath = storage_path("app/incapacidad_folder/{$incapacidad->id}/$image");
+                $filePath = storage_path("app/public/incapacidad_folder/{$incapacidad->id}/$image");
                 if (file_exists($filePath)) {
                     $zip->addFile($filePath, $image);
                 } else {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
