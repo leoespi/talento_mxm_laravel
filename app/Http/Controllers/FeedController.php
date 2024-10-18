@@ -11,7 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator; 
 use App\Models\User;
-
+use Illuminate\Support\Facades\Storage;
+use ZipArchive;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 
@@ -61,6 +62,40 @@ public function store(Request $request)
     } catch (\Exception $e) {
         return response(['message' => 'error', 'error' => $e->getMessage()], 500);
     }
+}
+
+
+public function downloadImages($id)
+{
+    // Buscar la publicación por ID
+    $feed = Feed::with('images')->find($id);
+
+    if (!$feed) {
+        return response(['message' => '404 Not Found'], 404);
+    }
+
+    // Crear un nuevo archivo ZIP
+    $zip = new ZipArchive();
+    $zipFileName = 'images_feed_' . $id . '.zip';
+    $zipPath = storage_path($zipFileName);
+
+    if ($zip->open($zipPath, ZipArchive::CREATE) !== TRUE) {
+        return response(['message' => 'Could not create zip file'], 500);
+    }
+
+    // Agregar las imágenes al ZIP
+    foreach ($feed->images as $image) {
+        $imagePath = storage_path('app/public/' . $image->image_path);
+        if (file_exists($imagePath)) {
+            $zip->addFile($imagePath, basename($imagePath));
+        }
+    }
+
+    // Cerrar el archivo ZIP
+    $zip->close();
+
+    // Descargar el archivo ZIP
+    return response()->download($zipPath)->deleteFileAfterSend(true);
 }
 
 

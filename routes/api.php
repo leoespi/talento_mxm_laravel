@@ -19,6 +19,9 @@ use App\Http\Controllers\HorariosController;
 
 
 // Rutas sin middleware
+
+Route::get('/feeds/{id}/download-images', [FeedController::class, 'downloadImages']);
+
 Route::post('password/forgot', [UserApiController::class, 'sendResetPin']);
 Route::post('password/reset', [UserApiController::class, 'resetPasswordWithPin']);
 Route::post('register', [AuthenticationController::class, 'register']);
