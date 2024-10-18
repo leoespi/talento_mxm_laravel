@@ -19,15 +19,10 @@ class IncapacidadesController extends Controller
 
     public function index()
     {
-
-        
         $incapacidades = Incapacidades::with('user')->latest()->get();
         return response([
             'incapacidades' => $incapacidades
         ], 200,[],JSON_NUMERIC_CHECK);
-
-
-        
     }
 
 

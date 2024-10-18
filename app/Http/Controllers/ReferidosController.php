@@ -67,7 +67,7 @@ class ReferidosController extends Controller
             // Guardar el documento PDF
             $documentoFile = $request->file('documento');
             $documentoName = $documentoFile->getClientOriginalName();
-            $documentoFile->storeAs('referidos_folder', $documentoName);
+            $documentoFile->storeAs('referidos_folder', $documentoName, 'public');
     
             // Crear el referido en la base de datos
             $referido = Referidos::create([
@@ -90,7 +90,7 @@ class ReferidosController extends Controller
             $referido = Referidos::findOrFail($id);
     
             // Verificar si el archivo existe en el sistema de almacenamiento
-            $documentoPath = storage_path('app/referidos_folder/' . $referido->documento);
+            $documentoPath = storage_path('app/public/referidos_folder/' . $referido->documento);
     
             if (!file_exists($documentoPath)) {
                 return response()->json(['error' => 'El archivo solicitado no existe'], 404);
