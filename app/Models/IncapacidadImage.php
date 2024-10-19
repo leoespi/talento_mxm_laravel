@@ -4,10 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 
 class IncapacidadImage extends Model
 {
-    protected $fillable = ['image'];
+    use HasFactory;
+
+
+    protected $fillable = [
+        'incapacidades_id',
+        'image_path',
+    ];
 
     public function incapacidad(): BelongsTo
     {

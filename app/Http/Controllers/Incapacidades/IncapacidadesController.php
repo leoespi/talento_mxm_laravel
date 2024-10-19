@@ -10,66 +10,73 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use App\Models\Incapacidades;
 use App\Http\Requests\IncapacidadesRequest;
+use Illuminate\Support\Facades\Storage;
+
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 
 
 class IncapacidadesController extends Controller
 {
-
     public function index()
     {
-        $incapacidades = Incapacidades::with('user')->latest()->get();
+        $incapacidades = Incapacidades::with('user', 'images')->get();
+    
+        // Iterar sobre cada incapacidad
+        $incapacidades->each(function($incapacidad) {
+            // Verificar si tiene imágenes antes de iterar
+            if ($incapacidad->images) {
+                $incapacidad->images->each(function($image) {
+                    $image->image_path = '/storage/' . $image->image_path;
+                });
+            }
+        });
+    
         return response([
             'incapacidades' => $incapacidades
-        ], 200,[],JSON_NUMERIC_CHECK);
+        ], 200, [], JSON_NUMERIC_CHECK);
     }
-
+    
+    
 
     public function store(Request $request)
     {
-        // Validar los datos entrantes
+
+        try{
+
+            // Validar los datos entrantes
         $validator = Validator::make($request->all(), [
             'user_id' => 'required|integer',
             'tipoincapacidadreportada' => 'required|string|max:50',
             'diasIncapacidad' => 'required|integer',
             'fechaInicioIncapacidad' => 'required|date',
             'entidadAfiliada' => 'required|string|max:50',
-            'images' => 'sometimes|array',
-            'images.*' => 'sometimes|file|mimes:jpg,jpeg,png,bmp|max:20000'
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 422);
-        }
+        $incapacidad = Incapacidades::create([
+            "user_id" => $request->user_id,
+            "tipo_incapacidad_reportada" => $request->tipoincapacidadreportada,
+            "dias_incapacidad" => $request->diasIncapacidad,
+            "fecha_inicio_incapacidad" => $request->fechaInicioIncapacidad,
+            "aplica_cobro" => $request->aplica_cobro,
+            "entidad_afiliada" => $request->entidadAfiliada,
+            "tipo_incapacidad" => $request->tipo_incapacidad,
+            
+        ]);
 
-        try {
-            $incapacidad = Incapacidades::create([
-                'uuid' => (string) Str::orderedUuid(),
-                "tipo_incapacidad_reportada" => $request->tipoincapacidadreportada,
-                "dias_incapacidad" => $request->diasIncapacidad,
-                "fecha_inicio_incapacidad" => $request->fechaInicioIncapacidad,
-                "aplica_cobro" => $request->aplica_cobro,
-                "entidad_afiliada" => $request->entidadAfiliada,
-                "tipo_incapacidad" => $request->tipo_incapacidad,
-                "user_id" => $request->user_id
-            ]);
-
-            $images = [];
-            if($request->hasFile('images')) {
-                foreach ($request->file('images') as $image) {
-                    $imageName = $image->getClientOriginalName();
-                    $image->storeAs('incapacidad_folder/' . $incapacidad->id, $imageName,  'public');
-                    $images[] = $imageName;
-                }
-                $incapacidad->update(['images' => json_encode($images)]);
+        if ($request->hasFile('images')){
+            foreach ($request->file('images') as $image){
+                $path = $image->store('incapacidad_images', 'public');
+                $incapacidad->images()->create(['image_path' => $path]);
             }
-
-            return response()->json($incapacidad, 201);
-        } catch (\Exception $e) {
-            Log::error('Error al crear la incapacidad: '.$e->getMessage());
-            return response()->json(['error' => 'Error al crear la incapacidad'], 500);
         }
+        return response(['message' => 'success'], 201);
+        }catch(Exception $e){
+            return response(['message' => 'error', 'error' => $e->getMessage()], 500);
+
+        }
+
     }
 
 

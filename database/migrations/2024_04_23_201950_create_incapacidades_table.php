@@ -23,8 +23,15 @@ class CreateIncapacidadesTable extends Migration
             $table->boolean('aplica_cobro')->nullable();
             $table->string('entidad_afiliada', 50);
             $table->string('tipo_incapacidad', 50)->nullable();
-            $table->uuid('uuid');
-            $table->json('images')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('incapacidad_images', function (Blueprint $table){
+
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('incapacidades_id');
+            $table->foreign('incapacidades_id')->references('id')->on('incapacidades')->onDelete('cascade');
+            $table->string('image_path');
             $table->timestamps();
         });
 
@@ -37,6 +44,7 @@ class CreateIncapacidadesTable extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('incapacidad_images');
         Schema::dropIfExists('incapacidades');
     }
 }
