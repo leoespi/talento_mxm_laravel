@@ -47,10 +47,12 @@ Route::middleware('auth:api')->group(function () {
     
     // EndPoints Incapacidades
     Route::apiResource('incapacidades', IncapacidadesController::class);
+    Route::get('/incapacidadesall', [IncapacidadesController::class, 'indexAll']);
     Route::get('incapacidades/{uuid}/downloadFromDB', [IncapacidadesController::class, 'downloadFromDB'])->name('incapacidades.downloadFromDB');
     Route::get('/export-incapacidades', [ExcelIncapacidadesController::class, 'exportIncapacidades'])->name('export-incapacidades');
     Route::get('incapacidades/download-zip/{uuid}', [IncapacidadesController::class, 'downloadZip']);
     Route::get('/incapacidades', [IncapacidadesController::class, 'index']);
+    Route::middleware('auth:sanctum')->get('/incapacidades/user', [IncapacidadesController::class, 'userIncapacidades'])->name('incapacidades.user');
 
 
 

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use App\Models\Incapacidades;
 use App\Http\Requests\IncapacidadesRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,10 +19,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class IncapacidadesController extends Controller
 {
+   
+
     public function index()
     {
-        $incapacidades = Incapacidades::with('user', 'images')->get();
-    
+        // Obtener el usuario autenticado
+        $user = Auth::user();
+
+        // Obtener las incapacidades del usuario autenticado
+        $incapacidades = Incapacidades::with('user', 'images')
+            ->where('user_id', $user->id)
+            ->get();
+
         // Iterar sobre cada incapacidad
         $incapacidades->each(function($incapacidad) {
             // Verificar si tiene imágenes antes de iterar
@@ -31,11 +40,33 @@ class IncapacidadesController extends Controller
                 });
             }
         });
-    
+
         return response([
             'incapacidades' => $incapacidades
         ], 200, [], JSON_NUMERIC_CHECK);
     }
+
+
+    public function indexAll()
+{
+    // Obtener todas las incapacidades con las relaciones de usuario e imágenes
+    $incapacidades = Incapacidades::with('user', 'images')->get();
+
+    // Iterar sobre cada incapacidad
+    $incapacidades->each(function($incapacidad) {
+        // Verificar si tiene imágenes antes de iterar
+        if ($incapacidad->images) {
+            $incapacidad->images->each(function($image) {
+                $image->image_path = '/storage/' . $image->image_path; // Ajusta la ruta según tu almacenamiento
+            });
+        }
+    });
+
+    return response([
+        'incapacidades' => $incapacidades
+    ], 200, [], JSON_NUMERIC_CHECK);
+}
+
     
     
 
@@ -174,7 +205,6 @@ public function downloadZip($uuid)
     
 
 }
-
 
 
 
