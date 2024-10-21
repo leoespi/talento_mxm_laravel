@@ -58,6 +58,8 @@ Route::middleware('auth:api')->group(function () {
 
     // EndPoints Cesantias
     Route::apiResource('cesantias', CesantiasController::class);
+    Route::get('/cesantiasall', [CesantiasController::class, 'indexAll']);
+
     Route::get('cesantias/download-zip/{uuid}', [CesantiasController::class, 'downloadZip']);
     Route::get('/export-cesantias/{year}', [ExcelCesantiasController::class, 'exportCesantias'])->name('export-cesantias');
     Route::put('/cesantias/{id}/authorize', [CesantiasController::class, 'authorizeCesantia']);

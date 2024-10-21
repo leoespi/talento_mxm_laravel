@@ -16,8 +16,8 @@ use App\Models\CesantiasDenegadas;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CesantiaAprobada;
 use App\Mail\CesantiaDenegada;
-
-
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 use ZipArchive;
 
@@ -39,52 +39,83 @@ class CesantiasController extends Controller
 
     public function index()
     {
-        $cesantias = Cesantias::with('user')->latest()->get();
+        $user =Auth::user();
+
+        $cesantias = Cesantias::with('user','images')
+         ->where('user_id',$user->id)
+         ->get();
+
+        ;
+
+        $cesantias->each(function ($cesantias){
+            if ($cesantias->images){
+                $cesantias->images->each(function ($image){
+                    $image->image_path = '/storage/'. $image->image_path;
+
+                });
+            }
+        });
+
         return response([
             'cesantias' => $cesantias
-        ], 200,[],JSON_NUMERIC_CHECK);
+        ], 200, [], JSON_NUMERIC_CHECK);
+
+   
+    }
+
+    public function indexAll(){
+
+        $cesantias = Cesantias::with('user','images')->get();
+
+        $cesantias->each(function($cesantias) {
+            if ($cesantias->images){
+                $cesantias->images->each(function ($image){
+                    $image->image_path = '/storage/'. $image->image_path;
+                });
+            }
+        });
+
+        
+    return response([
+        'cesantias' => $cesantias
+    ], 200, [], JSON_NUMERIC_CHECK);
     }
 
 
     //Almacenar Cesantias
     public function store(Request $request)
-    {
-        Log::info('Datos recibidos en la solicitud:', $request->all());
-
+{
+    try {
         $validator = Validator::make($request->all(), [
             'user_id' => 'required|integer',
-            'images' => 'sometimes|array',
-            'images.*' => 'sometimes|file|mimes:jpg,jpeg,png,bmp|max:15000'
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:20048'
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 422);
+            return response(['message' => 'Validation error', 'errors' => $validator->errors()], 422);
         }
 
-        try {
-            $cesantias = Cesantias::create([
-                'uuid' => (string) Str::orderedUuid(),
-                'tipo_cesantia_reportada' => $request->tipocesantiareportada,
-                'estado' => $request->estado,
-                'user_id' => $request->user_id
-            ]);
+        $cesantias = Cesantias::create([
+            'tipo_cesantia_reportada' => $request->tipocesantiareportada,
+            'estado' => $request->estado,
+            'user_id' => $request->user_id
+        ]);
 
-            $images = [];
-            if ($request->hasFile('images')) {
-                foreach ($request->file('images') as $image) {
-                    $imageName = $image->getClientOriginalName();
-                    $image->storeAs('cesantias_folder/' . $cesantias->id, $imageName,  'public');
-                    $images[] = $imageName;
-                }
-                $cesantias->update(['images' => json_encode($images)]);
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('cesantias_images', 'public'); // Solo debe almacenar aquí
+                $cesantias->images()->create(['image_path' => $path]);
             }
-
-            return response()->json($cesantias, 201);
-        } catch (\Exception $e) {
-            Log::error('Error al crear la cesantia: ' . $e->getMessage());
-            return response()->json(['error' => 'Error al crear la cesantia. Detalles en el registro de errores.'], 500);
         }
+        
+
+        return response(['message' => 'success', 'cesantias' => $cesantias->load('images')], 201);
+        
+    } catch (Exception $e) {
+        return response(['message' => 'error', 'error' => $e->getMessage()], 500);
     }
+}
+
 
 
 

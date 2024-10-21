@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 
 class Cesantias extends Model
@@ -13,15 +14,13 @@ class Cesantias extends Model
 
 
     protected $fillable = [
-
         'user_id',
         'tipo_cesantia_reportada',
         'estado',
         'justificacion',
         'uuid',
-        'images',
-
     ];
+    
 
     protected $casts = [
         'images' => 'array', 
@@ -32,4 +31,9 @@ class Cesantias extends Model
         return $this->belongsTo(User::class);
     }
     
+    
+    public function images(): HasMany
+    {
+        return $this->hasMany(CesantiasImages::class);
+    }
 }
