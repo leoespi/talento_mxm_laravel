@@ -16,6 +16,7 @@ use App\Http\Controllers\ExcelIncapacidadesController;
 use App\Http\Controllers\ExcelCesantiasController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\HorariosController;
+use App\Http\Controllers\RegistrosController;
 
 
 // Rutas sin middleware
@@ -71,6 +72,10 @@ Route::middleware('auth:api')->group(function () {
 
 
     Route::get('cesantias/{uuid}/images-size', [CesantiasController::class, 'calculateImagesSizeInMB']);
+
+    // EndPoints MIS Registros 
+    Route::get('/indexcesantias', [RegistrosController::class, 'indexcesantias']);
+    Route::get('/indexincapacidades', [RegistrosController::class, 'indexincapacidades']);
 
 
     // EndPoints Referidos
