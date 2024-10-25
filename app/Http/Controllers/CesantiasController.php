@@ -96,6 +96,7 @@ class CesantiasController extends Controller
         }
 
         $cesantias = Cesantias::create([
+            'uuid' => (string) Str::orderedUuid(),
             'tipo_cesantia_reportada' => $request->tipocesantiareportada,
             'estado' => $request->estado,
             'user_id' => $request->user_id
@@ -210,6 +211,12 @@ class CesantiasController extends Controller
             if (!$cesantia) {
                 return response()->json(['error' => 'Cesantia no encontrada'], 404);
             }
+
+             // Verificar si la cesantía está en estado 'Denegada'
+             if ($cesantia->estado === 'Aprobada') {
+                return response()->json(['error' => 'La cesantía no puede ser autorizada porque está Aprobada'], 422);
+            }
+    
     
             // Verificar si la cesantía está en estado 'Denegada'
             if ($cesantia->estado === 'Denegada') {
@@ -232,7 +239,6 @@ class CesantiasController extends Controller
                 'tipo_cesantia_reportada' => $cesantia->tipo_cesantia_reportada,
                 'estado' => 'Autorizada',
                 'uuid' => $cesantia->uuid,
-                'images' => $cesantia->images,
             ]);
     
             // Actualizar el estado de la cesantía original
