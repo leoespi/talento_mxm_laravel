@@ -22,6 +22,7 @@ class Incapacidades extends Model
         'tipo_incapacidad',
         'uuid',
         'images',
+        'documentos',
     ];
 
     protected $casts = [
@@ -36,5 +37,10 @@ class Incapacidades extends Model
     public function images(): HasMany
     {
         return $this->hasMany(IncapacidadImage::class);
+    }
+
+    public function documentos(): HasMany
+    {
+        return $this->hasMany(IncapacidadDocumentos::class);
     }
 }

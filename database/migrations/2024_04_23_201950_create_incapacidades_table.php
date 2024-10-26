@@ -35,6 +35,15 @@ class CreateIncapacidadesTable extends Migration
             $table->timestamps();
         });
 
+
+        Schema::create('incapacidad_documentos', function ($table){
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('incapacidades_id');
+            $table->foreign('incapacidades_id')->references('id')->on('incapacidades')->onDelete('cascade');
+            $table->string('documentos');
+            $table->timestamps();
+        } );
+
     }
 
     /**

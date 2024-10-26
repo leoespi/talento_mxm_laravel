@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator; 
 use Illuminate\Support\Str;
 use App\Models\Incapacidades;
+use App\Models\IncapacidadImage;
+use App\Models\IncapacidadDocumentos;
 use App\Http\Requests\IncapacidadesRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -39,7 +41,17 @@ class IncapacidadesController extends Controller
                     $image->image_path = '/storage/' . $image->image_path;
                 });
             }
+
+            if ($incapacidad->documentos) {
+                $incapacidad->documentos->each(function($documento) {
+                    $documento->documentos = '/storage/' . $documento->documentos; // Ajusta la ruta según tu almacenamiento
+                });
+            }
+
+            
         });
+
+
 
         return response([
             'incapacidades' => $incapacidades
@@ -60,6 +72,15 @@ class IncapacidadesController extends Controller
                 $image->image_path = '/storage/' . $image->image_path; // Ajusta la ruta según tu almacenamiento
             });
         }
+
+        if ($incapacidad->documentos) {
+            $incapacidad->documentos->each(function($documento) {
+                $documento->documentos = '/storage/' . $documento->documentos; // Ajusta la ruta según tu almacenamiento
+            });
+        }
+
+
+
     });
 
     return response([
@@ -102,6 +123,15 @@ class IncapacidadesController extends Controller
                 $incapacidad->images()->create(['image_path' => $path]);
             }
         }
+
+        // Manejar los documentos
+        if ($request->hasFile('documentos')) {
+            foreach ($request->file('documentos') as $documento) {
+                $path = $documento->store('incapacidad_documentos', 'public');
+                $incapacidad->documentos()->create(['documentos' => $path]);
+            }
+        }
+
         return response(['message' => 'success'], 201);
         }catch(Exception $e){
             return response(['message' => 'error', 'error' => $e->getMessage()], 500);
