@@ -35,6 +35,8 @@ Route::get('/Excel', function () {
     return view('Excel');
 });
 
+
+
 // Rutas con middleware 'auth:api'
 Route::middleware('auth:api')->group(function () {
 
@@ -54,6 +56,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('incapacidades/download-zip/{uuid}', [IncapacidadesController::class, 'downloadZip']);
     Route::get('/incapacidades', [IncapacidadesController::class, 'index']);
     Route::middleware('auth:sanctum')->get('/incapacidades/user', [IncapacidadesController::class, 'userIncapacidades'])->name('incapacidades.user');
+    Route::get('incapacidades/{id}/documentos', [IncapacidadesController::class, 'downloadDocument']);
+
 
 
 
