@@ -73,6 +73,14 @@ class CesantiasController extends Controller
                     $image->image_path = '/storage/'. $image->image_path;
                 });
             }
+
+            if ($cesantias->documentos) {
+                $cesantias->documentos->each(function($documento) {
+                    $documento->documentos = '/storage/' . $documento->documentos; // Ajusta la ruta según tu almacenamiento
+                });
+            }
+
+
         });
 
         
@@ -108,6 +116,15 @@ class CesantiasController extends Controller
                 $cesantias->images()->create(['image_path' => $path]);
             }
         }
+
+        // Manejar los documentos
+        if ($request->hasFile('documentos')) {
+            foreach ($request->file('documentos') as $documento) {
+                // Guarda el documento usando su nombre original
+                $path = $documento->storeAs('cesantias_documentos', $documento->getClientOriginalName(), 'public');
+                $cesantias->documentos()->create(['documentos' => $path]);
+            }
+        }
         
 
         return response(['message' => 'success', 'cesantias' => $cesantias->load('images')], 201);
@@ -116,6 +133,55 @@ class CesantiasController extends Controller
         return response(['message' => 'error', 'error' => $e->getMessage()], 500);
     }
 }
+
+
+public function downloadDocument($id)
+{
+    try {
+        // Buscar la incapacidad por su ID
+        $cesantias = Cesantias::with('documentos')->findOrFail($id);
+        
+        // Crear un nuevo archivo ZIP
+        $zip = new \ZipArchive();
+        $zipFileName = storage_path("app/public/cesantias_folder/{$cesantias->id}/documentos_cesantias_{$id}.zip");
+
+        // Asegurarse de que el directorio existe
+        $zipDir = dirname($zipFileName);
+        if (!file_exists($zipDir)) {
+            mkdir($zipDir, 0755, true);
+        }
+
+        if ($zip->open($zipFileName, \ZipArchive::CREATE) === TRUE) {
+            // Verificar si hay documentos asociados
+            if ($cesantias->documentos->isEmpty()) {
+                // Opción 1: Dejar el ZIP vacío y cerrarlo
+                $zip->close();
+                return response()->json(['message' => 'No hay documentos disponibles'], 200);
+            }
+
+            // Si hay documentos, agregarlos al ZIP
+            foreach ($cesantias->documentos as $documento) {
+                $filePath = storage_path("app/public/{$documento->documentos}");
+                if (file_exists($filePath)) {
+                    // Usa el nombre original del archivo al añadir al ZIP
+                    $zip->addFile($filePath, basename($filePath));
+                } else {
+                    \Log::error("File not found: $filePath");
+                }
+            }
+            $zip->close();
+        } else {
+            return response()->json(['error' => 'No se pudo crear el archivo ZIP'], 500);
+        }
+
+        // Descarga el archivo ZIP
+        return response()->download($zipFileName)->deleteFileAfterSend(true);
+    } catch (\Exception $e) {
+        \Log::error('Error al descargar los documentos: ' . $e->getMessage());
+        return response()->json(['error' => 'Error al descargar los documentos'], 500);
+    }
+}
+
 
 
 

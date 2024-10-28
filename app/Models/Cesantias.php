@@ -19,6 +19,7 @@ class Cesantias extends Model
         'estado',
         'justificacion',
         'uuid',
+        'documentos',
     ];
     
 
@@ -36,4 +37,10 @@ class Cesantias extends Model
     {
         return $this->hasMany(CesantiasImages::class);
     }
+
+    public function documentos(): HasMany
+    {
+        return $this->hasMany(CesantiasDocumentos::class);
+    }
 }
+

@@ -39,6 +39,14 @@ class RegistrosController extends Controller
 
                 });
             }
+
+
+            if ($cesantias->documentos) {
+                $cesantias->documentos->each(function($documento) {
+                    $documento->documentos = '/storage/' . $documento->documentos; // Ajusta la ruta según tu almacenamiento
+                });
+            }
+
         });
 
         return response([

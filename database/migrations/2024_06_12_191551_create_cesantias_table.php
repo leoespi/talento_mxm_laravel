@@ -30,6 +30,17 @@ class CreateCesantiasTable extends Migration
 
         });
 
+        Schema::create('cesantias_documentos', function ($table){
+
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('cesantias_id');
+            $table->foreign('cesantias_id')->references('id')->on('cesantias')->onDelete('cascade');
+            $table->string('documentos');
+            $table->timestamps();
+        }
+    
+    );
+
 
     }
 

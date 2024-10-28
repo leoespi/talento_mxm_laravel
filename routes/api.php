@@ -73,6 +73,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('cesantias/deny/{id}', [CesantiasController::class, 'DenyCesantia']);
     Route::post('/cesantias/denyadmin/{id}', [CesantiasController::class, 'DenyAuthorizedCesantia']);
     Route::post('cesantias/aprobar/{id}', [CesantiasController::class, 'AcceptCesantia']);
+    Route::get('cesantias/{id}/documentos', [CesantiasController::class, 'downloadDocument']);
 
 
     Route::get('cesantias/{uuid}/images-size', [CesantiasController::class, 'calculateImagesSizeInMB']);
