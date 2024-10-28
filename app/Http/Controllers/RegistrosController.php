@@ -68,6 +68,12 @@ class RegistrosController extends Controller
                     $image->image_path = '/storage/' . $image->image_path;
                 });
             }
+
+            if ($incapacidad->documentos) {
+                $incapacidad->documentos->each(function($documento) {
+                    $documento->documentos = '/storage/' . $documento->documentos; // Ajusta la ruta según tu almacenamiento
+                });
+            }
         });
 
         return response([

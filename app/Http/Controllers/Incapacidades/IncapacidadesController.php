@@ -91,12 +91,10 @@ class IncapacidadesController extends Controller
     
     
 
-    public function store(Request $request)
-    {
-
-        try{
-
-            // Validar los datos entrantes
+public function store(Request $request)
+{
+    try {
+        // Validar los datos entrantes
         $validator = Validator::make($request->all(), [
             'user_id' => 'required|integer',
             'tipoincapacidadreportada' => 'required|string|max:50',
@@ -114,12 +112,12 @@ class IncapacidadesController extends Controller
             "aplica_cobro" => $request->aplica_cobro,
             "entidad_afiliada" => $request->entidadAfiliada,
             "tipo_incapacidad" => $request->tipo_incapacidad,
-            
         ]);
 
-        if ($request->hasFile('images')){
-            foreach ($request->file('images') as $image){
-                $path = $image->store('incapacidad_images', 'public');
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                // Guarda la imagen usando su nombre original
+                $path = $image->storeAs('incapacidad_images', $image->getClientOriginalName(), 'public');
                 $incapacidad->images()->create(['image_path' => $path]);
             }
         }
@@ -127,71 +125,66 @@ class IncapacidadesController extends Controller
         // Manejar los documentos
         if ($request->hasFile('documentos')) {
             foreach ($request->file('documentos') as $documento) {
-                $path = $documento->store('incapacidad_documentos', 'public');
+                // Guarda el documento usando su nombre original
+                $path = $documento->storeAs('incapacidad_documentos', $documento->getClientOriginalName(), 'public');
                 $incapacidad->documentos()->create(['documentos' => $path]);
             }
         }
 
         return response(['message' => 'success'], 201);
-        }catch(Exception $e){
-            return response(['message' => 'error', 'error' => $e->getMessage()], 500);
+    } catch (Exception $e) {
+        return response(['message' => 'error', 'error' => $e->getMessage()], 500);
+    }
+}
 
+
+public function downloadDocument($id)
+{
+    try {
+        // Buscar la incapacidad por su ID
+        $incapacidad = Incapacidades::with('documentos')->findOrFail($id);
+        
+        // Crear un nuevo archivo ZIP
+        $zip = new \ZipArchive();
+        $zipFileName = storage_path("app/public/incapacidad_folder/{$incapacidad->id}/documentos_incapacidad_{$id}.zip");
+
+        // Asegurarse de que el directorio existe
+        $zipDir = dirname($zipFileName);
+        if (!file_exists($zipDir)) {
+            mkdir($zipDir, 0755, true);
         }
 
-    }
-
-    public function downloadDocument($id)
-    {
-        try {
-            // Buscar la incapacidad por su ID
-            $incapacidad = Incapacidades::with('documentos')->findOrFail($id);
-            
-            // Crear un nuevo archivo ZIP
-            $zip = new \ZipArchive();
-            $zipFileName = storage_path("app/public/incapacidad_folder/{$incapacidad->id}/documentos_incapacidad_{$id}.zip");
-    
-            // Asegurarse de que el directorio existe
-            $zipDir = dirname($zipFileName);
-            if (!file_exists($zipDir)) {
-                mkdir($zipDir, 0755, true);
-            }
-    
-            if ($zip->open($zipFileName, \ZipArchive::CREATE) === TRUE) {
-                // Verificar si hay documentos asociados
-                if ($incapacidad->documentos->isEmpty()) {
-                    // Si no hay documentos, puedes decidir cómo proceder
-                    // Opción 1: Dejar el ZIP vacío y cerrarlo
-                    $zip->close();
-                    return response()->json(['message' => 'No hay documentos disponibles'], 200);
-                    
-                    // Opción 2: Agregar un archivo de texto indicando que no hay documentos
-                    /*
-                    $zip->addFromString('mensaje.txt', 'No hay documentos disponibles');
-                    $zip->close();
-                    */
-                }
-    
-                // Si hay documentos, agregarlos al ZIP
-                foreach ($incapacidad->documentos as $documento) {
-                    $filePath = storage_path("app/public/{$documento->documentos}");
-                    if (file_exists($filePath)) {
-                        $zip->addFile($filePath, basename($filePath));
-                    } else {
-                        \Log::error("File not found: $filePath");
-                    }
-                }
+        if ($zip->open($zipFileName, \ZipArchive::CREATE) === TRUE) {
+            // Verificar si hay documentos asociados
+            if ($incapacidad->documentos->isEmpty()) {
+                // Opción 1: Dejar el ZIP vacío y cerrarlo
                 $zip->close();
-            } else {
-                return response()->json(['error' => 'No se pudo crear el archivo ZIP'], 500);
+                return response()->json(['message' => 'No hay documentos disponibles'], 200);
             }
-    
-            // Descarga el archivo ZIP
-            return response()->download($zipFileName)->deleteFileAfterSend(true);
-        } catch (\Exception $e) {
-            \Log::error('Error al descargar los documentos: ' . $e->getMessage());
-            return response()->json(['error' => 'Error al descargar los documentos'], 500);
+
+            // Si hay documentos, agregarlos al ZIP
+            foreach ($incapacidad->documentos as $documento) {
+                $filePath = storage_path("app/public/{$documento->documentos}");
+                if (file_exists($filePath)) {
+                    // Usa el nombre original del archivo al añadir al ZIP
+                    $zip->addFile($filePath, basename($filePath));
+                } else {
+                    \Log::error("File not found: $filePath");
+                }
+            }
+            $zip->close();
+        } else {
+            return response()->json(['error' => 'No se pudo crear el archivo ZIP'], 500);
         }
+
+        // Descarga el archivo ZIP
+        return response()->download($zipFileName)->deleteFileAfterSend(true);
+    } catch (\Exception $e) {
+        \Log::error('Error al descargar los documentos: ' . $e->getMessage());
+        return response()->json(['error' => 'Error al descargar los documentos'], 500);
     }
+}
+
     
     
 
