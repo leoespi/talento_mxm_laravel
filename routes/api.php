@@ -29,7 +29,6 @@ Route::post('register', [AuthenticationController::class, 'register']);
 Route::post('registeradmin', [AuthenticationController::class, 'registerAdmin']);
 Route::post('login', [AuthenticationController::class, 'login']);
 
-//Route::get('cesantias/download-zip/{id}', [CesantiasController::class, 'downloadZip']);
 
 
 Route::get('/test', function () {
@@ -61,6 +60,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/incapacidades', [IncapacidadesController::class, 'index']);
     Route::middleware('auth:sanctum')->get('/incapacidades/user', [IncapacidadesController::class, 'userIncapacidades'])->name('incapacidades.user');
     Route::get('incapacidades/{id}/documentos', [IncapacidadesController::class, 'downloadDocument']);
+    Route::get('/incapacidades/{id}/download-images', [IncapacidadesController::class, 'downloadImages']);
 
 
 

@@ -23,6 +23,7 @@ class CreateIncapacidadesTable extends Migration
             $table->boolean('aplica_cobro')->nullable();
             $table->string('entidad_afiliada', 50);
             $table->string('tipo_incapacidad', 50)->nullable();
+            $table->uuid('uuid');
             $table->timestamps();
         });
 

@@ -105,6 +105,7 @@ public function store(Request $request)
         ]);
 
         $incapacidad = Incapacidades::create([
+            'uuid' => (string) Str::orderedUuid(),
             "user_id" => $request->user_id,
             "tipo_incapacidad_reportada" => $request->tipoincapacidadreportada,
             "dias_incapacidad" => $request->diasIncapacidad,
@@ -235,41 +236,52 @@ public function update(Request $request, $id)
     return response()->json($incapacidad);
 }
 
-
-public function downloadZip($uuid)
+public function downloadImages($id)
 {
     try {
-        // Buscar la incapacidad por su UUID
-        $incapacidad = Incapacidades::where('uuid', $uuid)->firstOrFail();
-        $images = json_decode($incapacidad->images);
+        // Buscar las imágenes asociadas a la incapacidad especificada
+        $images = IncapacidadImage::where('incapacidades_id', $id)->get();
 
-        if (empty($images)) {
-            return response()->json(['error' => 'No images found'], 404);
+        // Crear un nuevo archivo ZIP
+        $zip = new \ZipArchive();
+        $zipFileName = storage_path("app/public/incapacidad_folder/{$id}/imagenes_incapacidad_{$id}.zip");
+
+        // Asegurarse de que el directorio existe
+        $zipDir = dirname($zipFileName);
+        if (!file_exists($zipDir)) {
+            mkdir($zipDir, 0755, true);
         }
 
-        $zip = new \ZipArchive();
-        $zipFileName = storage_path("app/public/incapacidad_folder/{$incapacidad->id}/incapacidad_{$uuid}.zip");
-
         if ($zip->open($zipFileName, \ZipArchive::CREATE) === TRUE) {
+            // Verificar si hay imágenes asociadas
+            if ($images->isEmpty()) {
+                $zip->close();
+                return response()->json(['message' => 'No hay imágenes disponibles'], 200);
+            }
+
+            // Si hay imágenes, agregarlas al ZIP
             foreach ($images as $image) {
-                $filePath = storage_path("app/public/incapacidad_folder/{$incapacidad->id}/$image");
+                $filePath = storage_path("app/public/{$image->image_path}");
                 if (file_exists($filePath)) {
-                    $zip->addFile($filePath, $image);
-                } else {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-                    Log::error("File not found: $filePath");
+                    // Usa el nombre original del archivo al añadir al ZIP
+                    $zip->addFile($filePath, basename($filePath));
+                } else {
+                    \Log::error("File not found: $filePath");
                 }
             }
             $zip->close();
         } else {
-            return response()->json(['error' => 'Could not create ZIP file'], 500);
+            return response()->json(['error' => 'No se pudo crear el archivo ZIP'], 500);
         }
 
+        // Descarga el archivo ZIP
         return response()->download($zipFileName)->deleteFileAfterSend(true);
     } catch (\Exception $e) {
-        Log::error('Error al descargar las imágenes: ' . $e->getMessage());
+        \Log::error('Error al descargar las imágenes: ' . $e->getMessage());
         return response()->json(['error' => 'Error al descargar las imágenes'], 500);
     }
 }
+
 
     
     public function destroy($id)
