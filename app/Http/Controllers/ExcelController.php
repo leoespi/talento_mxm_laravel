@@ -16,7 +16,7 @@ class ExcelController extends Controller
     public function headings(): array
     {
         return [
-            'ID','Nombre','Cedula','Email','','Rol ID','Fecha de Creación','Fecha de Actualización'
+            'ID','Nombre','Cedula','Email','Rol ID','Fecha de Creación','Fecha de Actualización'
         ];
     }
 }

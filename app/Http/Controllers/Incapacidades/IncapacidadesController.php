@@ -4,61 +4,25 @@ namespace App\Http\Controllers\Incapacidades;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
-
 use Illuminate\Support\Facades\Validator; 
 use Illuminate\Support\Str;
+
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Http\Requests\IncapacidadesRequest;
+
+//modelos
 use App\Models\Incapacidades;
 use App\Models\IncapacidadImage;
 use App\Models\IncapacidadDocumentos;
-use App\Http\Requests\IncapacidadesRequest;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 
 
 class IncapacidadesController extends Controller
 {
    
-
-    public function index()
-    {
-        // Obtener el usuario autenticado
-        $user = Auth::user();
-
-        // Obtener las incapacidades del usuario autenticado
-        $incapacidades = Incapacidades::with('user', 'images')
-            ->where('user_id', $user->id)
-            ->get();
-
-        // Iterar sobre cada incapacidad
-        $incapacidades->each(function($incapacidad) {
-            // Verificar si tiene imágenes antes de iterar
-            if ($incapacidad->images) {
-                $incapacidad->images->each(function($image) {
-                    $image->image_path = '/storage/' . $image->image_path;
-                });
-            }
-
-            if ($incapacidad->documentos) {
-                $incapacidad->documentos->each(function($documento) {
-                    $documento->documentos = '/storage/' . $documento->documentos; // Ajusta la ruta según tu almacenamiento
-                });
-            }
-
-            
-        });
-
-
-
-        return response([
-            'incapacidades' => $incapacidades
-        ], 200, [], JSON_NUMERIC_CHECK);
-    }
-
-
     public function indexAll()
 {
     // Obtener todas las incapacidades con las relaciones de usuario e imágenes
@@ -78,11 +42,7 @@ class IncapacidadesController extends Controller
                 $documento->documentos = '/storage/' . $documento->documentos; // Ajusta la ruta según tu almacenamiento
             });
         }
-
-
-
     });
-
     return response([
         'incapacidades' => $incapacidades
     ], 200, [], JSON_NUMERIC_CHECK);
@@ -186,34 +146,6 @@ public function downloadDocument($id)
     }
 }
 
-    
-    
-
-    public function downloadFromDB($uuid)
-{
-    try {
-        // Buscar la incapacidad por su UUID
-        $incapacidad = Incapacidades::where('uuid', $uuid)->firstOrFail();
-        
-        // Obtener la ruta completa de la imagen
-        $imagePath = storage_path("app/public/incapacidad_folder/{$incapacidad->id}/{$incapacidad->image}");
-        
-        // Verificar si la imagen existe
-        if (!file_exists($imagePath)) {
-            abort(404, 'La imagen no se encontró');
-        }
-        
-        // Obtener el tipo MIME de la imagen
-        $mimeType = mime_content_type($imagePath);
-        
-        // Devolver la imagen como una respuesta HTTP con el tipo MIME adecuado
-        return response()->file($imagePath, ['Content-Type' => $mimeType]);
-    } catch (\Exception $e) {
-        // Manejar cualquier error que pueda ocurrir
-        return response()->json(['error' => $e->getMessage()], 500);
-    }
-}
-
 
 public function update(Request $request, $id)
 {
@@ -235,6 +167,7 @@ public function update(Request $request, $id)
     
     return response()->json($incapacidad);
 }
+
 
 public function downloadImages($id)
 {

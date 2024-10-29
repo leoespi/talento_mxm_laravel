@@ -13,11 +13,7 @@ use App\Mail\UserActivated;
 
 class UserApiController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    
     public function index()
     {
         $user = User::all();
@@ -55,12 +51,7 @@ class UserApiController extends Controller
 
     }
 
-    /**
-     * Remove the specified resource from storage.  
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+   
     public function destroy($id)
     {
         $user = User::find($id);
@@ -133,6 +124,7 @@ public function resetPasswordWithPin(Request $request)
 
     return response()->json(['message' => 'User activated successfully']);
 }
+
 
 public function deactivate($id)
 {

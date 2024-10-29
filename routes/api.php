@@ -23,11 +23,12 @@ use App\Http\Controllers\RegistrosController;
 
 Route::get('/feeds/{id}/download-images', [FeedController::class, 'downloadImages']);
 
-Route::post('password/forgot', [UserApiController::class, 'sendResetPin']);
-Route::post('password/reset', [UserApiController::class, 'resetPasswordWithPin']);
-Route::post('register', [AuthenticationController::class, 'register']);
-Route::post('registeradmin', [AuthenticationController::class, 'registerAdmin']);
-Route::post('login', [AuthenticationController::class, 'login']);
+Route::post('password/forgot', [UserApiController::class, 'sendResetPin']); //Enviar pin de reseteo de contraseña
+Route::post('password/reset', [UserApiController::class, 'resetPasswordWithPin']); //Resetear contraseña
+
+Route::post('login', [AuthenticationController::class, 'login']); //Iniciar sesion
+Route::post('register', [AuthenticationController::class, 'register']); //Registrarse Usuarios
+Route::post('registeradmin', [AuthenticationController::class, 'registerAdmin']); //Registro Administrador
 
 
 
@@ -45,62 +46,69 @@ Route::middleware('auth:api')->group(function () {
 
     //endpoints Usuarios
     Route::put('/updateUser', [UserApiController::class, 'update']);
-    Route::apiResource('user', UserApiController::class);
+    Route::apiResource('user', UserApiController::class); //Apiresource como pa asegurar
     Route::get('/users', [UserApiController::class, 'index']);
-    Route::post('/users/{id}/activate', [UserApiController::class, 'activate']);
-    Route::post('/users/{id}/deactivate', [UserApiController::class, 'deactivate']);
-    Route::get('/export-users', [ExcelController::class, 'exportUsers'])->name('export-users');
-    
+    Route::post('/users/{id}/activate', [UserApiController::class, 'activate']); //desactivar usuario
+    Route::post('/users/{id}/deactivate', [UserApiController::class, 'deactivate']); //activar usuario
+    Route::get('/get/user', [UserApiController::class, 'indexUser']);
+
+
+    Route::get('logout', [AuthController::class, "logout"]);//Cerrar sesion
+
+    Route::get('/export-users', [ExcelController::class, 'exportUsers'])->name('export-users'); //Exportar usuarios
+
     // EndPoints Incapacidades
-    Route::apiResource('incapacidades', IncapacidadesController::class);
-    Route::get('/incapacidadesall', [IncapacidadesController::class, 'indexAll']);
-    Route::get('incapacidades/{uuid}/downloadFromDB', [IncapacidadesController::class, 'downloadFromDB'])->name('incapacidades.downloadFromDB');
-    Route::get('/export-incapacidades', [ExcelIncapacidadesController::class, 'exportIncapacidades'])->name('export-incapacidades');
-    Route::get('incapacidades/download-zip/{uuid}', [IncapacidadesController::class, 'downloadZip']);
-    Route::get('/incapacidades', [IncapacidadesController::class, 'index']);
+    Route::apiResource('incapacidades', IncapacidadesController::class); // Apiresource (pa que no se despapaye)
+    Route::get('/incapacidadesall', [IncapacidadesController::class, 'indexAll']); //get all incapacidades
+    Route::get('incapacidades/{id}/documentos', [IncapacidadesController::class, 'downloadDocument']); //Descargar documentos incapacidades
+    Route::get('/incapacidades/{id}/download-images', [IncapacidadesController::class, 'downloadImages']); //Descargar imagenes incapacidades
+    Route::get('/export-incapacidades', [ExcelIncapacidadesController::class, 'exportIncapacidades'])->name('export-incapacidades'); //Export de todas las incapacidades
+
+
     Route::middleware('auth:sanctum')->get('/incapacidades/user', [IncapacidadesController::class, 'userIncapacidades'])->name('incapacidades.user');
-    Route::get('incapacidades/{id}/documentos', [IncapacidadesController::class, 'downloadDocument']);
-    Route::get('/incapacidades/{id}/download-images', [IncapacidadesController::class, 'downloadImages']);
-
-
-
+    
 
     // EndPoints Cesantias
-    Route::apiResource('cesantias', CesantiasController::class);
-    Route::get('/cesantiasall', [CesantiasController::class, 'indexAll']);
+    Route::apiResource('cesantias', CesantiasController::class); //api resource de las cesantias
+    Route::get('/cesantiasall', [CesantiasController::class, 'indexAll']); // get de todas las cesantias
+    Route::get('/export-cesantias/{year}', [ExcelCesantiasController::class, 'exportCesantias'])->name('export-cesantias'); //Export excell de cesantias
+    Route::put('/cesantias/{id}/authorize', [CesantiasController::class, 'authorizeCesantia']); //Autorizar cesantia
+    Route::post('cesantias/deny/{id}', [CesantiasController::class, 'DenyCesantia']); //Denegar cesantia    
+    Route::get('cesantias/{id}/documentos', [CesantiasController::class, 'downloadDocument']); //Descargar documentos cesantias
+    Route::get('/cesantias/{id}/download-images', [CesantiasController::class, 'downloadImages']);//Descargar imagenes cesantias 
+    Route::get('authorizedCesantia', [CesantiasController::class, 'indexCesantiasAutorizadas']); //Get  cesantias Autorizadas
+    Route::post('/cesantias/denyadmin/{id}', [CesantiasController::class, 'DenyAuthorizedCesantia']); //Denegar cesantia autorizada
+    Route::post('cesantias/aprobar/{id}', [CesantiasController::class, 'AcceptCesantia']); // APROBAR cesantia
 
-    Route::get('/export-cesantias/{year}', [ExcelCesantiasController::class, 'exportCesantias'])->name('export-cesantias');
-    Route::put('/cesantias/{id}/authorize', [CesantiasController::class, 'authorizeCesantia']);
-    Route::get('authorizedCesantia', [CesantiasController::class, 'indexCesantiasAutorizadas']);
-    Route::get('authorizedCesantia/download-zip/{uuid}', [CesantiasController::class, 'downloadZipAutorized']);
-    Route::post('cesantias/deny/{id}', [CesantiasController::class, 'DenyCesantia']);
-    Route::post('/cesantias/denyadmin/{id}', [CesantiasController::class, 'DenyAuthorizedCesantia']);
-    Route::post('cesantias/aprobar/{id}', [CesantiasController::class, 'AcceptCesantia']);
-    Route::get('cesantias/{id}/documentos', [CesantiasController::class, 'downloadDocument']);
-    Route::get('/cesantias/{id}/download-images', [CesantiasController::class, 'downloadImages']);
+    Route::get('cesantias/{uuid}/images-size', [CesantiasController::class, 'calculateImagesSizeInMB']); // Calcular tamaño de las imagenes
 
 
-    Route::get('cesantias/{uuid}/images-size', [CesantiasController::class, 'calculateImagesSizeInMB']);
-
-    // EndPoints MIS Registros 
-    Route::get('/indexcesantias', [RegistrosController::class, 'indexcesantias']);
-    Route::get('/indexincapacidades', [RegistrosController::class, 'indexincapacidades']);
-
+    //Route::get('authorizedCesantia/download-zip/{uuid}', [CesantiasController::class, 'downloadZipAutorized']);
 
     // EndPoints Referidos
     Route::apiResource('referidos', ReferidosController::class);
     Route::get('referidos/download/{id}', [ReferidosController::class, 'downloadDocumento']);
 
-    // EndPoints Feed
+
+    // MIS Registros 
+    Route::get('/indexcesantias', [RegistrosController::class, 'indexcesantias']);
+    Route::get('/indexincapacidades', [RegistrosController::class, 'indexincapacidades']);
+
+
+    // EndPoints Feed (publicacion)
     Route::apiResource('feeds', FeedController::class);
     Route::post('feeds', [FeedController::class, 'store']);
     Route::get('feeds', [FeedController::class, 'index']);
     
-    Route::get('/get/user', [UserApiController::class, 'indexUser']);
-    Route::get('logout', [AuthController::class, "logout"]);
+    
     Route::get("/perfil/ver", [PerfilController::class, 'verPerfil']);
 
     Route::post("/horarios-import", [HorariosController::class, 'store']);
     Route::get('/horarios', [HorariosController::class, 'index']);
+
+
+
+    
+
 
 });

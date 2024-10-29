@@ -5,21 +5,22 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-
-
 use Illuminate\Support\Facades\Validator; 
 use Illuminate\Support\Str;
-use App\Models\Cesantias;
-use App\Models\CesantiasImages;
 
-use App\Models\CesantiasAutorizadas;
-use App\Models\CesantiasDenegadas;
-
+//Mailers
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CesantiaAprobada;
 use App\Mail\CesantiaDenegada;
-use Illuminate\Support\Facades\Storage;
+
+//modelos
+use App\Models\Cesantias;
+use App\Models\CesantiasImages;
+use App\Models\CesantiasAutorizadas;
+
+
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 use ZipArchive;
 
@@ -32,38 +33,6 @@ class CesantiasController extends Controller
 {
     
 
-
-    /**
-     * 
-     * CESANTIAS
-     * 
-     * */ 
-
-    public function index()
-    {
-        $user =Auth::user();
-
-        $cesantias = Cesantias::with('user','images')
-         ->where('user_id',$user->id)
-         ->get();
-
-        ;
-
-        $cesantias->each(function ($cesantias){
-            if ($cesantias->images){
-                $cesantias->images->each(function ($image){
-                    $image->image_path = '/storage/'. $image->image_path;
-
-                });
-            }
-        });
-
-        return response([
-            'cesantias' => $cesantias
-        ], 200, [], JSON_NUMERIC_CHECK);
-
-   
-    }
 
     public function indexAll(){
 
@@ -232,10 +201,6 @@ public function downloadImages($id)
 }
 
 
-
-
-
-
     //Descargar Cesantias (creo que debo de quitar eso pq no se usa )
     public function downloadFromDB($uuid)
     {  
@@ -253,20 +218,6 @@ public function downloadImages($id)
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
-
-    
-   
-
-
-    //Eliminar cesantias (No se usa pero esta )
-    public function destroy($id)
-    {
-        $cesantias = Cesantias::find($id);
-        $cesantias->delete();
-        return response()->json(null, "Cesantia eliminada", 204);
-    }
-
 
 
 
@@ -502,14 +453,6 @@ public function downloadImages($id)
     }
 }
    
-    //Eliminar cesantias autorizadas 
-    public function destroy_Authorized($id)
-    {
-        $authorizedCesantia = CesantiasAutorizadas::find($id);
-        $authorizedCesantia->delete();
-        return response()->json(null, "Cesantia eliminada", 204);
-    }
-
 
   
     /***
@@ -606,11 +549,6 @@ public function downloadImages($id)
              return -1; // Retorna un valor indicativo de error o no encontrado
          }
      }
-
-
-
-
-
 
 
 }

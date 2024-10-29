@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+
 use App\Models\Feed;
 use App\Models\FeedImage;
 use Illuminate\Http\Request;
@@ -64,39 +65,6 @@ public function store(Request $request)
     }
 }
 
-
-public function downloadImages($id)
-{
-    // Buscar la publicación por ID
-    $feed = Feed::with('images')->find($id);
-
-    if (!$feed) {
-        return response(['message' => '404 Not Found'], 404);
-    }
-
-    // Crear un nuevo archivo ZIP
-    $zip = new ZipArchive();
-    $zipFileName = 'images_feed_' . $id . '.zip';
-    $zipPath = storage_path($zipFileName);
-
-    if ($zip->open($zipPath, ZipArchive::CREATE) !== TRUE) {
-        return response(['message' => 'Could not create zip file'], 500);
-    }
-
-    // Agregar las imágenes al ZIP
-    foreach ($feed->images as $image) {
-        $imagePath = storage_path('app/public/' . $image->image_path);
-        if (file_exists($imagePath)) {
-            $zip->addFile($imagePath, basename($imagePath));
-        }
-    }
-
-    // Cerrar el archivo ZIP
-    $zip->close();
-
-    // Descargar el archivo ZIP
-    return response()->download($zipPath)->deleteFileAfterSend(true);
-}
 
 
     
