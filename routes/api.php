@@ -28,6 +28,10 @@ Route::post('password/reset', [UserApiController::class, 'resetPasswordWithPin']
 Route::post('register', [AuthenticationController::class, 'register']);
 Route::post('registeradmin', [AuthenticationController::class, 'registerAdmin']);
 Route::post('login', [AuthenticationController::class, 'login']);
+
+//Route::get('cesantias/download-zip/{id}', [CesantiasController::class, 'downloadZip']);
+
+
 Route::get('/test', function () {
     return response(['message' => 'Api is working'], 200);
 });
@@ -65,7 +69,6 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('cesantias', CesantiasController::class);
     Route::get('/cesantiasall', [CesantiasController::class, 'indexAll']);
 
-    Route::get('cesantias/download-zip/{uuid}', [CesantiasController::class, 'downloadZip']);
     Route::get('/export-cesantias/{year}', [ExcelCesantiasController::class, 'exportCesantias'])->name('export-cesantias');
     Route::put('/cesantias/{id}/authorize', [CesantiasController::class, 'authorizeCesantia']);
     Route::get('authorizedCesantia', [CesantiasController::class, 'indexCesantiasAutorizadas']);
@@ -74,6 +77,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/cesantias/denyadmin/{id}', [CesantiasController::class, 'DenyAuthorizedCesantia']);
     Route::post('cesantias/aprobar/{id}', [CesantiasController::class, 'AcceptCesantia']);
     Route::get('cesantias/{id}/documentos', [CesantiasController::class, 'downloadDocument']);
+    Route::get('/cesantias/{id}/download-images', [CesantiasController::class, 'downloadImages']);
 
 
     Route::get('cesantias/{uuid}/images-size', [CesantiasController::class, 'calculateImagesSizeInMB']);

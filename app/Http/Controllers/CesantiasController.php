@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator; 
 use Illuminate\Support\Str;
 use App\Models\Cesantias;
+use App\Models\CesantiasImages;
+
 use App\Models\CesantiasAutorizadas;
 use App\Models\CesantiasDenegadas;
 
@@ -182,6 +184,54 @@ public function downloadDocument($id)
     }
 }
 
+public function downloadImages($id)
+{
+    try {
+        // Buscar las imágenes asociadas a la cesantía especificada
+        $images = CesantiasImages::where('cesantias_id', $id)->get();
+
+        // Crear un nuevo archivo ZIP
+        $zip = new \ZipArchive();
+        $zipFileName = storage_path("app/public/cesantias_folder/{$id}/imagenes_cesantias_{$id}.zip");
+
+        // Asegurarse de que el directorio existe
+        $zipDir = dirname($zipFileName);
+        if (!file_exists($zipDir)) {
+            mkdir($zipDir, 0755, true);
+        }
+
+        if ($zip->open($zipFileName, \ZipArchive::CREATE) === TRUE) {
+            // Verificar si hay imágenes asociadas
+            if ($images->isEmpty()) {
+                // Cerrar el ZIP y devolver un mensaje indicando que no hay imágenes
+                $zip->close();
+                return response()->json(['message' => 'No hay imágenes disponibles'], 200);
+            }
+
+            // Si hay imágenes, agregarlas al ZIP
+            foreach ($images as $image) {
+                $filePath = storage_path("app/public/{$image->image_path}");
+                if (file_exists($filePath)) {
+                    // Usa el nombre original del archivo al añadir al ZIP
+                    $zip->addFile($filePath, basename($filePath));
+                } else {
+                    \Log::error("File not found: $filePath");
+                }
+            }
+            $zip->close();
+        } else {
+            return response()->json(['error' => 'No se pudo crear el archivo ZIP'], 500);
+        }
+
+        // Descarga el archivo ZIP
+        return response()->download($zipFileName)->deleteFileAfterSend(true);
+    } catch (\Exception $e) {
+        \Log::error('Error al descargar las imágenes: ' . $e->getMessage());
+        return response()->json(['error' => 'Error al descargar las imágenes'], 500);
+    }
+}
+
+
 
 
 
@@ -206,40 +256,7 @@ public function downloadDocument($id)
 
 
     
-    //Descargar Cesantias en ZIP 
-    public function downloadZip($uuid)
-    {
-        try {
-            $cesantias = Cesantias::where('uuid', $uuid)->firstOrFail();
-            $images = json_decode($cesantias->images);
-
-            if (empty($images)) {
-                return response()->json(['error' => 'No images found'], 404);
-            }
-
-            $zip = new \ZipArchive();
-            $zipFileName = storage_path("app/public/cesantias_folder/{$cesantias->id}/cesantias_{$uuid}.zip");
-
-            if ($zip->open($zipFileName, \ZipArchive::CREATE) === TRUE) {
-                foreach ($images as $image) {
-                    $filePath = storage_path("app/public/cesantias_folder/{$cesantias->id}/$image");
-                    if (file_exists($filePath)) {
-                        $zip->addFile($filePath, $image);
-                    } else {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-                        Log::error("File not found: $filePath");
-                    }
-                }
-                $zip->close();
-            } else {
-                return response()->json(['error' => 'Could not create ZIP file'], 500);
-            }
-
-            return response()->download($zipFileName)->deleteFileAfterSend(true);
-        } catch (\Exception $e) {
-            Log::error('Error al descargar las imágenes: ' . $e->getMessage());
-            return response()->json(['error' => 'Error al descargar las imágenes'], 500);
-        }
-    }
+   
 
 
     //Eliminar cesantias (No se usa pero esta )
