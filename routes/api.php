@@ -17,6 +17,7 @@ use App\Http\Controllers\ExcelCesantiasController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\HorariosController;
 use App\Http\Controllers\RegistrosController;
+use App\Http\Controllers\Auth\UserImportController;
 
 //COLOCAR ESTE COMANDO PARA CARGAR EL BACKEND A UNA URL CON EL IP DEL PC 
 //php artisan serve --host=192.168.1.148 --port=8000
@@ -48,6 +49,7 @@ Route::get('/Excel', function () {
 Route::middleware('auth:api')->group(function () {
 
     //endpoints Usuarios
+    Route::post('/import-users', [UserImportController::class, 'import']); //Importacion de  Users
     Route::put('/updateUser', [UserApiController::class, 'update']);
     Route::apiResource('user', UserApiController::class); //Apiresource como pa asegurar
     Route::get('/users', [UserApiController::class, 'index']);

@@ -20,7 +20,7 @@ class AdminSeeder extends Seeder{
         $user = User::create([
             'name' => "SuperAdmin",
             'cedula' => "1097092580", 
-            'email' => "betsy.taboada@mxm.com.co",
+            'email' => "betsy.tboada@mxm.com.co",
             'password' => Hash::make('123456'),
             'rol_id' => 4,
             'is_active' => true,
@@ -30,7 +30,7 @@ class AdminSeeder extends Seeder{
 
         $user = User::create([
             'name' => "Administrador1",
-            'cedula' => "1097092599",  // Agrega cedula 
+            'cedula' => "1097092539",  // Agrega cedula 
             'email' => "talentohumanomxm1@gmail.com",
             'password' => Hash::make('123456'),
             'rol_id' => 1,
