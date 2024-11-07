@@ -18,6 +18,9 @@ use App\Http\Controllers\FeedController;
 use App\Http\Controllers\HorariosController;
 use App\Http\Controllers\RegistrosController;
 
+//COLOCAR ESTE COMANDO PARA CARGAR EL BACKEND A UNA URL CON EL IP DEL PC 
+//php artisan serve --host=192.168.1.148 --port=8000
+
 
 // Rutas sin middleware
 
