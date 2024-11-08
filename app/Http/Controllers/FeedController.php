@@ -40,12 +40,14 @@ public function store(Request $request)
     try {
         $request->validate([
             'user_id' => 'required|integer',
+            'categoria'=>'required|string',
             'content' => 'required|string',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Imágenes opcionales
             'video_link' => 'nullable|url', // Enlace de video opcional
         ]);
 
         $feed = Feed::create([
+            'categoria' => $request->categoria,
             'content' => $request->content,
             'user_id' => $request->user_id,
             'video_link' => $request->video_link, // Agregar enlace del video si existe

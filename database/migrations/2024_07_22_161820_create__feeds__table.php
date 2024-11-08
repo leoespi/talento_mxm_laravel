@@ -10,6 +10,7 @@ class CreateFeedsTable extends Migration
         Schema::create('feeds', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
+            $table->text('categoria');
             $table->foreign('user_id')->references('id')->on('users');
             $table->text('content');
             $table->timestamps();
