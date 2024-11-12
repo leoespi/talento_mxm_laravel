@@ -18,6 +18,7 @@ use App\Http\Controllers\FeedController;
 use App\Http\Controllers\HorariosController;
 use App\Http\Controllers\RegistrosController;
 use App\Http\Controllers\Auth\UserImportController;
+use App\Http\Controllers\CategoriaImportController;
 
 //COLOCAR ESTE COMANDO PARA CARGAR EL BACKEND A UNA URL CON EL IP DEL PC 
 //php artisan serve --host=192.168.1.148 --port=8000
@@ -69,8 +70,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/incapacidades/{id}/download-images', [IncapacidadesController::class, 'downloadImages']); //Descargar imagenes incapacidades
     Route::get('/export-incapacidades', [ExcelIncapacidadesController::class, 'exportIncapacidades'])->name('export-incapacidades'); //Export de todas las incapacidades
 
-
-    Route::middleware('auth:sanctum')->get('/incapacidades/user', [IncapacidadesController::class, 'userIncapacidades'])->name('incapacidades.user');
+    Route::post('/importar-categorias', [CategoriaImportController::class, 'importar'])->name('importar.categorias');    Route::middleware('auth:sanctum')->get('/incapacidades/user', [IncapacidadesController::class, 'userIncapacidades'])->name('incapacidades.user');
     
 
     // EndPoints Cesantias

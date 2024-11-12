@@ -43,4 +43,9 @@ class Incapacidades extends Model
     {
         return $this->hasMany(IncapacidadDocumentos::class);
     }
+
+    public function categoria()
+    {
+        return $this->belongsTo(Categoria::class);
+    }
 }
