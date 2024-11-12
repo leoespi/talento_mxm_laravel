@@ -25,7 +25,8 @@ class CreateIncapacidadesTable extends Migration
             $table->string('tipo_incapacidad', 50)->nullable();
             $table->uuid('uuid')->unique(); // UUID único
             $table->unsignedBigInteger('categoria_id')->nullable();  // Asegúrate de definir esta columna
-            $table->foreign('categoria_id')->references('id')->on('categorias')->onDelete('set null');  // Relación con categorias            $table->timestamps();
+            $table->foreign('categoria_id')->references('id')->on('categorias')->onDelete('set null');  // Relación con categorias         $table->timestamps();
+            $table->timestamps();
         });
 
         Schema::create('incapacidad_images', function (Blueprint $table){

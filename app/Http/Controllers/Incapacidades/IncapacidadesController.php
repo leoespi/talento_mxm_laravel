@@ -14,6 +14,7 @@ use App\Http\Requests\IncapacidadesRequest;
 use App\Models\Incapacidades;
 use App\Models\IncapacidadImage;
 use App\Models\IncapacidadDocumentos;
+use App\Models\Categoria;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -61,8 +62,15 @@ public function store(Request $request)
             'diasIncapacidad' => 'required|integer',
             'fechaInicioIncapacidad' => 'required|date',
             'entidadAfiliada' => 'required|string|max:50',
+            'categoria_id' => 'required|exists:categorias,id',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
+
+          // Obtener el ID de la categoría de la solicitud
+          $categoriaId = $request->categoria_id;
+
+          // Verificar que la categoría existe (opcional, si ya estás usando el campo exists en la validación esto no es necesario)
+          $categoria = Categoria::findOrFail($categoriaId);
 
         $incapacidad = Incapacidades::create([
             'uuid' => (string) Str::orderedUuid(),
@@ -72,6 +80,7 @@ public function store(Request $request)
             "fecha_inicio_incapacidad" => $request->fechaInicioIncapacidad,
             "aplica_cobro" => $request->aplica_cobro,
             "entidad_afiliada" => $request->entidadAfiliada,
+            "categoria_id" => $categoria->id,  
             "tipo_incapacidad" => $request->tipo_incapacidad,
         ]);
 
