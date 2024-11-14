@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Incapacidades extends Model
 {
     use HasFactory;
+    public $timestamps = false;
 
     protected $fillable = [
         'user_id',
@@ -23,6 +24,7 @@ class Incapacidades extends Model
         'uuid',
         'images',
         'documentos',
+        'categoria_id',
     ];
 
     protected $casts = [

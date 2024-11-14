@@ -49,9 +49,6 @@ class IncapacidadesController extends Controller
     ], 200, [], JSON_NUMERIC_CHECK);
 }
 
-    
-    
-
 public function store(Request $request)
 {
     try {
@@ -62,28 +59,54 @@ public function store(Request $request)
             'diasIncapacidad' => 'required|integer',
             'fechaInicioIncapacidad' => 'required|date',
             'entidadAfiliada' => 'required|string|max:50',
-            'categoria_id' => 'required|exists:categorias,id',
+            'categoria_codigo' => 'required|string',  // Ahora acepta cualquier cadena
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-          // Obtener el ID de la categoría de la solicitud
-          $categoriaId = $request->categoria_id;
+        // Si la validación falla, retorna un error
+        if ($validator->fails()) {
+            return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 422);
+        }
 
-          // Verificar que la categoría existe (opcional, si ya estás usando el campo exists en la validación esto no es necesario)
-          $categoria = Categoria::findOrFail($categoriaId);
+        // Obtener el código de la categoría
+        $codigoCategoria = $request->categoria_codigo;
 
-        $incapacidad = Incapacidades::create([
+        // Depuración: Verificar el código de categoría recibido
+        \Log::info('Código de categoría recibido:', ['codigoCategoria' => $codigoCategoria]);
+
+        // Consultar la categoría por su código
+        $categoria = Categoria::where('codigo', $codigoCategoria)->first();
+
+        // Depuración: Verificar si la categoría fue encontrada
+        if (!$categoria) {
+            return response()->json(['message' => 'Este código de categoría no existe. Solicítalo con tu EPS.'], 404);
+        }
+
+        // Confirmar que la categoría fue encontrada y obtener su ID
+        \Log::info('Categoría encontrada:', ['categoria_id' => $categoria->id]);
+
+        // Crear la incapacidad
+        $incapacidadData = [
             'uuid' => (string) Str::orderedUuid(),
-            "user_id" => $request->user_id,
-            "tipo_incapacidad_reportada" => $request->tipoincapacidadreportada,
-            "dias_incapacidad" => $request->diasIncapacidad,
-            "fecha_inicio_incapacidad" => $request->fechaInicioIncapacidad,
-            "aplica_cobro" => $request->aplica_cobro,
-            "entidad_afiliada" => $request->entidadAfiliada,
-            "categoria_id" => $categoria->id,  
-            "tipo_incapacidad" => $request->tipo_incapacidad,
-        ]);
+            'user_id' => $request->user_id,
+            'tipo_incapacidad_reportada' => $request->tipoincapacidadreportada,
+            'dias_incapacidad' => $request->diasIncapacidad,
+            'fecha_inicio_incapacidad' => $request->fechaInicioIncapacidad,
+            'aplica_cobro' => $request->aplica_cobro,
+            'entidad_afiliada' => $request->entidadAfiliada,
+            'categoria_id' => $categoria->id,  // Asignar el ID de la categoría encontrada
+            'tipo_incapacidad' => $request->tipo_incapacidad,
+        ];
 
+        // Depuración: Verificar los datos de la incapacidad antes de crearla
+        \Log::info('Datos de incapacidad a crear:', ['incapacidadData' => $incapacidadData]);
+
+        $incapacidad = Incapacidades::create($incapacidadData);
+
+        // Depuración: Verificar los datos de la incapacidad creada
+        \Log::info('Incapacidad creada:', ['incapacidad' => $incapacidad]);
+
+        // Manejar las imágenes si las hay
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
                 // Guarda la imagen usando su nombre original
@@ -92,7 +115,7 @@ public function store(Request $request)
             }
         }
 
-        // Manejar los documentos
+        // Manejar los documentos si los hay
         if ($request->hasFile('documentos')) {
             foreach ($request->file('documentos') as $documento) {
                 // Guarda el documento usando su nombre original
@@ -101,11 +124,16 @@ public function store(Request $request)
             }
         }
 
-        return response(['message' => 'success'], 201);
+        // Responder con éxito
+        return response(['message' => 'Incapacidad creada exitosamente'], 201);
+
     } catch (Exception $e) {
-        return response(['message' => 'error', 'error' => $e->getMessage()], 500);
+        // Mostrar el error y la traza del error
+        return response(['message' => 'error', 'error' => $e->getMessage(), 'trace' => $e->getTrace()], 500);
     }
 }
+
+
 
 
 public function downloadDocument($id)
