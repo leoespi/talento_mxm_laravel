@@ -35,6 +35,7 @@ Route::post('password/reset', [UserApiController::class, 'resetPasswordWithPin']
 Route::post('login', [AuthenticationController::class, 'login']); //Iniciar sesion
 Route::post('register', [AuthenticationController::class, 'register']); //Registrarse Usuarios
 Route::post('registeradmin', [AuthenticationController::class, 'registerAdmin']); //Registro Administrador
+Route::get('/categoria/{codigo}', [IncapacidadesController::class, 'consultarCodigoCategoria']);
 
 
 
@@ -70,6 +71,9 @@ Route::middleware('auth:api')->group(function () {
     Route::get('incapacidades/{id}/documentos', [IncapacidadesController::class, 'downloadDocument']); //Descargar documentos incapacidades
     Route::get('/incapacidades/{id}/download-images', [IncapacidadesController::class, 'downloadImages']); //Descargar imagenes incapacidades
     Route::get('/export-incapacidades', [ExcelIncapacidadesController::class, 'exportIncapacidades'])->name('export-incapacidades'); //Export de todas las incapacidades
+
+    // En routes/api.php
+    //consultar si existe el codigo en la base de datos
 
     Route::get('categorias', [CategoriaController::class, 'index']);
 

@@ -49,6 +49,24 @@ class IncapacidadesController extends Controller
     ], 200, [], JSON_NUMERIC_CHECK);
 }
 
+public function consultarCodigoCategoria($codigoCategoria)
+{
+    // Log para saber que la consulta se inició
+    \Log::info("Consultando código de categoría: $codigoCategoria");
+
+    // Consultar la categoría por su código
+    $categoria = Categoria::where('codigo', $codigoCategoria)->first();
+
+    // Si la categoría no existe, retornar un error
+    if (!$categoria) {
+        \Log::warning("Código de categoría no encontrado: $codigoCategoria");
+        return response()->json(['message' => 'Este código de categoría no existe. Solicítalo con tu EPS.'], 404);
+    }
+
+    // Si se encuentra la categoría, devolverla
+    \Log::info("Código de categoría encontrado: $codigoCategoria");
+    return $categoria;
+}
 public function store(Request $request)
 {
     try {
