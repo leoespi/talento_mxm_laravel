@@ -41,21 +41,28 @@ class UserApiController extends Controller
         return response()->json($user, 200);
 
     }
-
+    
     public function update(Request $request)
     {
+        // Obtener el usuario autenticado
         $user = Auth::user();
-        $user->name = $request->name;
-        $user->cedula = $request->cedula;
-        $user->email = $request->email;
-        $user->p_venta = $request->p_venta;
-        $user->cargo = $request->cargo;
-
-         $user->save();
+    
+        // Validación de los datos del request (opcional, pero recomendado)
+        $validated = $request->validate([
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|email|max:255',
+            'p_venta' => 'nullable|string|max:100',
+            'cargo' => 'nullable|string|max:100',
+        ]);
+    
+        // Actualizar solo los campos que están presentes en la solicitud (sin `cedula`)
+        $user->update($request->only(['name', 'email', 'p_venta', 'cargo']));
+    
+        // Retornar la respuesta con el usuario actualizado
         return response()->json($user);
-
     }
-
+    
+    
    
     public function destroy($id)
     {

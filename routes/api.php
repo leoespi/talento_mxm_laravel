@@ -53,12 +53,12 @@ Route::middleware('auth:api')->group(function () {
 
     //endpoints Usuarios
     Route::post('/import-users', [UserImportController::class, 'import']); //Importacion de  Users
-    Route::put('/updateUser', [UserApiController::class, 'update']);
     Route::apiResource('user', UserApiController::class); //Apiresource como pa asegurar
     Route::get('/users', [UserApiController::class, 'index']);
     Route::post('/users/{id}/activate', [UserApiController::class, 'activate']); //desactivar usuario
     Route::post('/users/{id}/deactivate', [UserApiController::class, 'deactivate']); //activar usuario
     Route::get('/get/user', [UserApiController::class, 'indexUser']);
+    Route::put('/user', [UserApiController::class, 'update']);
 
 
     Route::get('logout', [AuthController::class, "logout"]);//Cerrar sesion
