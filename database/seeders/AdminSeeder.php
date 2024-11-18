@@ -23,6 +23,9 @@ class AdminSeeder extends Seeder{
             'email' => "betsy.tboada@mxm.com.co",
             'password' => Hash::make('123456'),
             'rol_id' => 4,
+            'p_venta' => "ADMINISTRACION",
+            'cargo'=> "ANALISTA DE PROCESOS",
+
             'is_active' => true,
 
         ]);
@@ -33,6 +36,8 @@ class AdminSeeder extends Seeder{
             'cedula' => "1097092539",  // Agrega cedula 
             'email' => "talentohumanomxm1@gmail.com",
             'password' => Hash::make('123456'),
+            'p_venta' => "ADMINISTRACION",
+            'cargo'=> "ANALISTA DE PROCESOS",
             'rol_id' => 1,
             'is_active' => true,
 
@@ -43,6 +48,8 @@ class AdminSeeder extends Seeder{
             'cedula' => "27951191", 
             'email' => "talentohumanomxm2@gmail.com",
             'password' => Hash::make('123456'),
+            'p_venta' => "ADMINISTRACION",
+            'cargo'=> "ANALISTA DE PROCESOS",
             'rol_id' => 1,
             'is_active' => true,
 
@@ -53,6 +60,8 @@ class AdminSeeder extends Seeder{
             'cedula' => "27951193", 
             'email' => "talentohumanomxm3@gmail.com",
             'password' => Hash::make('123456'),
+            'p_venta' => "ADMINISTRACION",
+            'cargo'=> "ANALISTA DE PROCESOS",
             'rol_id' => 1,
             'is_active' => true,
 
@@ -63,6 +72,8 @@ class AdminSeeder extends Seeder{
             'cedula' => "1097092588", 
             'email' => "comunicacion@gmail.com",
             'password' => Hash::make('123456'),
+            'p_venta' => "ADMINISTRACION",
+            'cargo'=> "ANALISTA DE PROCESOS",
             'rol_id' => 3,
             'is_active' => true,
 

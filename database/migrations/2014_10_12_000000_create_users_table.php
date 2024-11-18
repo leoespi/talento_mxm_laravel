@@ -23,6 +23,8 @@ return new class extends Migration
             $table->foreignId('rol_id');
             $table->foreign('rol_id')->references('id')->on('rols');
             $table->boolean('is_active')->default(false);
+            $table->string('p_venta');
+            $table->string('cargo');
             $table->rememberToken();
             $table->timestamps();   
         });

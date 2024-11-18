@@ -34,6 +34,8 @@ class UserApiController extends Controller
         $user->cedula = $request->cedula;
         $user->email = $request->email;
         $user->rol_id = 2;
+        $user->p_venta = $request->p_venta;
+        $user->cargo = $request->cargo;
         $user->password =bcrypt($request->password);
         $user->save();
         return response()->json($user, 200);
@@ -46,6 +48,9 @@ class UserApiController extends Controller
         $user->name = $request->name;
         $user->cedula = $request->cedula;
         $user->email = $request->email;
+        $user->p_venta = $request->p_venta;
+        $user->cargo = $request->cargo;
+
          $user->save();
         return response()->json($user);
 

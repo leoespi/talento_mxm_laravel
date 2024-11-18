@@ -30,6 +30,8 @@ class PerfilController extends Controller
         'cedula' => $request->cedula,
         'email' => $request->email,
         'rol_id' => $request->rol_id,
+        'p_venta' => $request->p_venta,
+        'cargo' => $request->cargo
     ]);
 
     return response()->json($perfil, 201);
@@ -65,6 +67,7 @@ public function verPerfil()
         $perfil->name = $request->name;
         $perfil->cedula = $request->cedula;
         $perfil->email = $request->email;
+        
         $perfil->save();
 
 

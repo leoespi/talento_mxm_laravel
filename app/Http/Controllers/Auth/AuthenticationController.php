@@ -21,6 +21,8 @@ class AuthenticationController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'rol_id' => 2,
+            'p_venta' => $request->p_venta,
+            'cargo' => $request->cargo,
             'is_active' => false,
         ];
 
@@ -49,6 +51,8 @@ class AuthenticationController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'rol_id' => $rol_id,
+            'p_venta' => $request->p_venta,
+            'cargo' => $request->cargo,
             'is_active' => false,
         ];
 
