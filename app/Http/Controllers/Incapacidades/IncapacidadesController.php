@@ -111,6 +111,7 @@ public function store(Request $request)
             'dias_incapacidad' => $request->diasIncapacidad,
             'fecha_inicio_incapacidad' => $request->fechaInicioIncapacidad,
             'aplica_cobro' => $request->aplica_cobro,
+            'identificador_incapacidad'=>$request->identificador_incapacidad,
             'entidad_afiliada' => $request->entidadAfiliada,
             'categoria_id' => $categoria->id,  // Asignar el ID de la categoría encontrada
             'tipo_incapacidad' => $request->tipo_incapacidad,
@@ -209,7 +210,12 @@ public function update(Request $request, $id)
         return response()->json(['message' => 'Incapacidad no encontrada'], 404);
     }
     
+
     // Solo actualiza los campos específicos si están presentes en la solicitud
+    if($request->has('identificador_incapacidad')){
+        $incapacidad->identificador_incapacidad = $request->identificador_incapacidad;
+    }
+
     if ($request->has('aplica_cobro')) {
         $incapacidad->aplica_cobro = $request->aplica_cobro;
     }

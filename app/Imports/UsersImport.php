@@ -22,7 +22,7 @@ class UsersImport implements ToModel, WithHeadingRow
             'name' => $row['name'],
             'email' => $row['email'],
             'password' => Hash::make($row['password']), // Aquí encriptas la contraseña
-            'is_active' => $row['is_active'] === 'true' ? true : false, // Convierte la cadena a booleano
+            'is_active' => $row['is_active'] === 'Activo' ? true : false, // Convierte la cadena a booleano
             'rol_id' => 2, // Asigna un rol predeterminado, puedes modificar esto según sea necesario
             'p_venta' =>$row['p_venta'], 
             'cargo' =>$row['cargo'],

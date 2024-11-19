@@ -19,6 +19,7 @@ class Incapacidades extends Model
         'dias_incapacidad',
         'fecha_inicio_incapacidad',
         'aplica_cobro',
+        'identificador_incapacidad',
         'entidad_afiliada',
         'tipo_incapacidad',
         'uuid',

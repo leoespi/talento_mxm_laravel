@@ -21,6 +21,7 @@ class CreateIncapacidadesTable extends Migration
             $table->integer('dias_incapacidad');
             $table->date('fecha_inicio_incapacidad');
             $table->boolean('aplica_cobro')->nullable();
+            $table->string('identificador_incapacidad')->nullable();
             $table->string('entidad_afiliada', 50);
             $table->string('tipo_incapacidad', 50)->nullable();
             $table->uuid('uuid')->unique(); // UUID único

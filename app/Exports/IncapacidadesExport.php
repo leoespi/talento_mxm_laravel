@@ -27,7 +27,7 @@ class IncapacidadesExport implements FromCollection, WithHeadings, WithMapping
     public function headings(): array
     {
         return [
-            'ID', 'Nombre del Usuario','Cedula', 'Dias de incapacidad', 'Fecha inicio incapacidad', 'Aplica cobro', 'Eps Afiliada', 'Tipo de incapacidad','tipo_incapacidad_reportada','Fecha de Creación', 'Fecha de Actualización'
+            'ID', 'Nombre del Usuario','Cedula', 'Dias de incapacidad', 'Fecha inicio incapacidad', 'Aplica cobro','identificador', 'Eps Afiliada','codigo', 'Tipo de incapacidad','tipo_incapacidad_reportada','Fecha de Creación', 'Fecha de Actualización'
         ];
     }
 
@@ -42,7 +42,9 @@ class IncapacidadesExport implements FromCollection, WithHeadings, WithMapping
         $incapacidad->dias_incapacidad,
         $incapacidad->fecha_inicio_incapacidad,
         $aplicaCobro,
+        $incapacidad->identificador_incapacidad,
         $incapacidad->entidad_afiliada,
+        $incapacidad->categoria->codigo,
         $incapacidad->tipo_incapacidad,
         $incapacidad->tipo_incapacidad_reportada,
         $incapacidad->created_at,
