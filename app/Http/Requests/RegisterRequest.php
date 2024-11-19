@@ -27,6 +27,8 @@ class RegisterRequest extends FormRequest
             'name' => 'required|min:3',
             'cedula' => 'required|integer|min:8|unique:users',
             'email' => 'required|email|unique:users',
+            'p_venta' => 'required|min:3',
+            'cargo' => 'required|min:3',
             'password' => 'required|min:6',
         ];
     }
