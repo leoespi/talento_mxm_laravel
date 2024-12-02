@@ -12,9 +12,9 @@ use App\Models\Incapacidades;
 use App\Http\Requests\IncapacidadesRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-
+use App\Models\PermisoRemunerado;
+use App\Models\Malla;
 use App\Models\Cesantias;
-
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -88,5 +88,41 @@ class RegistrosController extends Controller
             'incapacidades' => $incapacidades
         ], 200, [], JSON_NUMERIC_CHECK);
     }
+
+
+
+    
+
+    public function indexPermisos()
+    {
+        // Obtener el usuario autenticado
+        $user = Auth::user();
+
+        // Obtener los permisos remunerados del usuario autenticado
+        $permisos = PermisoRemunerado::where('user_id', $user->id)->get();
+
+        // Retornar la respuesta con los permisos de ese usuario
+        return response([
+            'permisos' => $permisos
+        ], 200, [], JSON_NUMERIC_CHECK);
+    }
+
+    
+    public function indexMallas()
+    {
+        // Obtener el usuario autenticado
+        $user = Auth::user();
+
+        // Obtener los permisos remunerados del usuario autenticado
+        $mallas = Malla::where('user_id', $user->id)->get();
+
+        // Retornar la respuesta con los permisos de ese usuario
+        return response([
+            'mallas' => $mallas
+        ], 200, [], JSON_NUMERIC_CHECK);
+    }
+  
+  
+
     
 }

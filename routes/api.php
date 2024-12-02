@@ -21,6 +21,15 @@ use App\Http\Controllers\Auth\UserImportController;
 use App\Http\Controllers\CategoriaImportController;
 use App\Http\Controllers\CategoriaController;
 
+use App\Http\Controllers\MallaController;
+
+
+use App\Http\Controllers\PermisoRemuneradoController;
+use App\Exports\PermisoRemuneradoExport;
+
+
+use Maatwebsite\Excel\Facades\Excel;
+
 //COLOCAR ESTE COMANDO PARA CARGAR EL BACKEND A UNA URL CON EL IP DEL PC 
 //php artisan serve --host=192.168.1.148 --port=8000
 
@@ -37,6 +46,8 @@ Route::post('register', [AuthenticationController::class, 'register']); //Regist
 Route::post('registeradmin', [AuthenticationController::class, 'registerAdmin']); //Registro Administrador
 Route::get('/categoria/{codigo}', [IncapacidadesController::class, 'consultarCodigoCategoria']);
 
+
+Route::get('malla-descargar/{id}', [MallaController::class, 'downloadDocumento']);
 
 
 Route::get('/test', function () {
@@ -72,6 +83,16 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/incapacidades/{id}/download-images', [IncapacidadesController::class, 'downloadImages']); //Descargar imagenes incapacidades
     Route::get('/export-incapacidades', [ExcelIncapacidadesController::class, 'exportIncapacidades'])->name('export-incapacidades'); //Export de todas las incapacidades
 
+
+    // EndPoints Permisos Remunerados
+    Route::apiResource('permisos', PermisoRemuneradoController::class); //Apiresource como pa asegurar
+    Route::get('/permisos-user', [PermisoRemuneradoController::class, 'indexAuth']);
+
+    Route::get('permisos-exportar', function () {
+        return Excel::download(new PermisoRemuneradoExport, 'permisos.xlsx');
+    });
+
+   
     // En routes/api.php
     //consultar si existe el codigo en la base de datos
 
@@ -107,7 +128,10 @@ Route::middleware('auth:api')->group(function () {
     // MIS Registros 
     Route::get('/indexcesantias', [RegistrosController::class, 'indexcesantias']);
     Route::get('/indexincapacidades', [RegistrosController::class, 'indexincapacidades']);
+    Route::get('/indexpermisos', [RegistrosController::class, 'indexPermisos']);
+    Route::get('/indexmallas', [RegistrosController::class, 'indexMallas']);
 
+    
 
     // EndPoints Feed (publicacion)
     Route::apiResource('feeds', FeedController::class);
@@ -119,6 +143,12 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post("/horarios-import", [HorariosController::class, 'store']);
     Route::get('/horarios', [HorariosController::class, 'index']);
+
+
+ 
+    Route::apiResource('malla', MallaController::class);
+    Route::put('/malla-estado/{id}', [MallaController::class, 'estado']);
+    Route::put('/malla-calificar/{id}', [MallaController::class, 'calificar']);
 
 
 

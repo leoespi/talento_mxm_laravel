@@ -97,7 +97,6 @@ class CesantiasController extends Controller
             }
         }
         
-
         return response(['message' => 'success', 'cesantias' => $cesantias->load('images')], 201);
         
     } catch (Exception $e) {

@@ -55,10 +55,21 @@ class User extends Authenticatable
         return $this->hasMany(Incapacidades::class);
     }
     
+
+    public function permisos(): HasMany
+    {
+        return $this->hasMany(PermisoRemunerado::class);
+    }
     
     public function Cesantias(): HasMany
     {
         return $this->hasMany(Incapacidades::class);
+    }
+
+    
+    public function Malla(): HasMany
+    {
+        return $this->hasMany(Malla::class);
     }
 
     public function Publicacion(): HasMany

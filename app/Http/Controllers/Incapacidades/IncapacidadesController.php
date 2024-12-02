@@ -67,6 +67,8 @@ public function consultarCodigoCategoria($codigoCategoria)
     \Log::info("Código de categoría encontrado: $codigoCategoria");
     return $categoria;
 }
+
+
 public function store(Request $request)
 {
     try {
